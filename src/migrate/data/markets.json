@@ -10,29 +10,5 @@
     "to": "BTC",
     "spread": 0,
     "status": "ACTIVE"
-  },
-  {
-    "from": "DAI",
-    "to": "BTC",
-    "spread": 0,
-    "status": "ACTIVE"
-  },
-  {
-    "from": "BTC",
-    "to": "DAI",
-    "spread": 0,
-    "status": "ACTIVE"
-  },
-  {
-    "from": "ETH",
-    "to": "DAI",
-    "spread": 0,
-    "status": "ACTIVE"
-  },
-  {
-    "from": "DAI",
-    "to": "ETH",
-    "spread": 0,
-    "status": "ACTIVE"
   }
 ]
