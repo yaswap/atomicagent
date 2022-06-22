@@ -1,0 +1,58 @@
+[database]
+uri = "mongodb://localhost/liqualitytest"
+debug = false
+
+[redis]
+uri = "redis://localhost:6379/1"
+
+[application]
+apiPort = 3030
+queuePassword = "test123"
+queuePasswordRW = "secretRWTest123"
+quoteExpirationInSeconds = 1800
+nodeSwapExpirationDurationInSeconds = 2700
+swapExpirationDurationInSeconds = 3600
+
+[auth]
+cookieSecret = '58da74ef560e5578cb46219b7818d7c2'
+cookieMaxAgeMs = 86400000
+simplePassword = '25ec02267950f537347b4a7c02b00ced'
+
+[threshold]
+manualAboveFromAmountUsd = 5000
+
+# [vault]
+# endpoint = "http://127.0.0.1:8200"
+# mnemonicsBasePath = "secret/data/agent/mainnet/production/mnemonics"
+
+[worker]
+minConcurrentSwaps = 3
+killswitch = 'pm2 stop "Worker"'
+
+[assets]
+  [assets.BTC]
+  network = "bitcoin_testnet"
+  addressType = "bech32"
+  swapMode = "p2wsh"
+  feeNumberOfBlocks = 2
+  blockTimeInSeconds = 5
+  defaultFee = "average"
+    [assets.BTC.wallet]
+    type = "js"
+    mnemonic = "snack country horror material trash seven fossil slim pet soft impose priority"
+    [assets.BTC.api]
+    url = "https://liquality.io/testnet/electrs/"
+    [assets.BTC.batchApi]
+    url = "https://liquality.io/electrs-testnet-batch/"
+
+  [assets.ETH]
+  network="ropsten"
+  blockTimeInSeconds = 5
+  defaultFee = "average"
+    [assets.ETH.wallet]
+    type = "js"
+    mnemonic = "snack country horror material trash seven fossil slim pet soft impose priority"
+    [assets.ETH.scraper]
+    url = "https://eth-ropsten-api.liq-chainhub.net"
+    [assets.ETH.rpc]
+    url = "https://ropsten.infura.io/v3/37efa691ffec4c41a60aa4a69865d8f6"
