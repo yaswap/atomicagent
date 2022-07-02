@@ -14,6 +14,13 @@ const { BitcoinFeeApiProvider } = require('@liquality/bitcoin-fee-api-provider')
 const { BitcoinRpcFeeProvider } = require('@liquality/bitcoin-rpc-fee-provider')
 const { BitcoinNetworks } = require('@liquality/bitcoin-networks')
 
+const { YacoinSwapProvider } = require('@liquality/yacoin-swap-provider')
+const { YacoinJsWalletProvider } = require('@liquality/yacoin-js-wallet-provider')
+const { YacoinEsploraApiProvider } = require('@liquality/yacoin-esplora-api-provider')
+const { YacoinEsploraSwapFindProvider } = require('@liquality/yacoin-esplora-swap-find-provider')
+const { YacoinFeeApiProvider } = require('@liquality/yacoin-fee-api-provider')
+const { YacoinNetworks } = require('@liquality/yacoin-networks')
+
 const { EthereumRpcProvider } = require('@liquality/ethereum-rpc-provider')
 const { EthereumJsWalletProvider } = require('@liquality/ethereum-js-wallet-provider')
 const { EthereumSwapProvider } = require('@liquality/ethereum-swap-provider')
@@ -111,6 +118,70 @@ async function createBtcClient() {
   }
 
   return btcClient
+}
+
+async function createYacClient() {
+  const yacConfig = config.assets.BTC
+  const network = YacoinNetworks[yacConfig.network]
+
+  const yacClient = new Client()
+  if (yacConfig.wallet && yacConfig.wallet.type === 'js') {
+    const mnemonic = await secretManager.getMnemonic('YAC')
+
+    yacClient.addProvider(
+      new YacoinEsploraApiProvider({
+        url: yacConfig.api.esploraUrl,
+        network: network,
+        numberOfBlockConfirmation: yacConfig.feeNumberOfBlocks
+      })
+    )
+
+    yacClient.addProvider(
+      new YacoinJsWalletProvider({
+        network: network,
+        mnemonic,
+        baseDerivationPath: `m/84'/${network.coinType}'/0'`
+      })
+    )
+  }
+
+  // CURRENTLY, HAVEN'T SUPPORTED TO USE COINS FROM YACOIND
+  // else {
+  //   yacClient.addProvider(
+  //     new BitcoinRpcProvider({
+  //       uri: yacConfig.rpc.url,
+  //       username: yacConfig.rpc.username,
+  //       password: yacConfig.rpc.password,
+  //       network: network,
+  //       feeBlockConfirmations: yacConfig.feeNumberOfBlocks
+  //     })
+  //   )
+  //   yacClient.addProvider(
+  //     new BitcoinNodeWalletProvider({
+  //       network: network,
+  //       uri: yacConfig.rpc.url,
+  //       username: yacConfig.rpc.username,
+  //       password: yacConfig.rpc.password,
+  //       addressType: yacConfig.addressType
+  //     })
+  //   )
+  // }
+
+  yacClient.addProvider(
+    new YacoinSwapProvider({
+      network: network,
+      mode: yacConfig.swapMode
+    })
+  )
+
+  if (yacConfig.wallet && yacConfig.wallet.type === 'js') {
+    // Override swap finding with esplora
+    yacClient.addProvider(new YacoinEsploraSwapFindProvider(yacConfig.api.esploraSwapUrl))
+  }
+
+  yacClient.addProvider(new YacoinFeeApiProvider('https://liquality.io/swap/mempool/v1/fees/recommended'))
+
+  return yacClient
 }
 
 async function createEthClient(asset) {
@@ -256,6 +327,7 @@ async function createClient(asset) {
   const assetData = assets[asset]
 
   if (assetData.chain === 'bitcoin') return createBtcClient()
+  if (assetData.chain === 'yacoin') return createYacClient()
   if (assetData.chain === 'rsk') return createEthClient(asset)
   if (assetData.chain === 'bsc') return createEthClient(asset)
   if (assetData.chain === 'polygon') return createEthClient(asset)

@@ -10,8 +10,8 @@ apiPort = 3030
 queuePassword = "test123"
 queuePasswordRW = "secretRWTest123"
 quoteExpirationInSeconds = 1800
-nodeSwapExpirationDurationInSeconds = 2700
-swapExpirationDurationInSeconds = 3600
+nodeSwapExpirationDurationInSeconds = 43200
+swapExpirationDurationInSeconds = 86400
 
 [auth]
 cookieSecret = '58da74ef560e5578cb46219b7818d7c2'
@@ -44,6 +44,18 @@ killswitch = 'pm2 stop "Worker"'
     url = "https://liquality.io/testnet/electrs/"
     [assets.BTC.batchApi]
     url = "https://liquality.io/electrs-testnet-batch/"
+
+  [assets.YAC]
+  network = "yacoin_testnet"
+  feeNumberOfBlocks = 1
+  blockTimeInSeconds = 5
+  defaultFee = "average"
+    [assets.YAC.wallet]
+    type = "js"
+    mnemonic = "snack country horror material trash seven fossil slim pet soft impose priority"
+    [assets.YAC.api]
+    esploraUrl = "http://73.43.56.247:3001/api"
+    esploraSwapUrl = "http://73.43.56.247:3001"
 
   [assets.ETH]
   network="ropsten"
