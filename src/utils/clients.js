@@ -121,7 +121,7 @@ async function createBtcClient() {
 }
 
 async function createYacClient() {
-  const yacConfig = config.assets.BTC
+  const yacConfig = config.assets.YAC
   const network = YacoinNetworks[yacConfig.network]
 
   const yacClient = new Client()
