@@ -12,6 +12,7 @@ const fx = require('../utils/fx')
 const { getClient } = require('../utils/clients')
 const config = require('../config')
 const coingecko = require('../utils/coinGeckoClient')
+const yacoinExplorer = require('../utils/yacoinExplorerClient')
 const reportError = require('../utils/reportError')
 
 const MarketSchema = new mongoose.Schema(
@@ -78,17 +79,26 @@ MarketSchema.static('updateAllMarketData', async function () {
     }, new Set())
   ]
   const assets = await Asset.find({ code: { $in: assetCodes } }).exec()
+  const yacoinPrice = await yacoinExplorer.getPrices()
+  console.log('TACA ===> updateAllMarketData, yacoinPrice = ', yacoinPrice)
   const fixedUsdRates = assets.reduce((acc, asset) => {
     if (asset.fixedUsdRate) {
       acc[asset.code] = asset.fixedUsdRate
     }
 
+    if (asset.code == 'YAC') {
+      acc[asset.code] = yacoinPrice
+    }
+
     return acc
   }, {})
+
   const plainMarkets = markets.map((m) => ({ from: m.from, to: m.to }))
   debug('Getting rates from coingecko')
   const marketRates = await coingecko.getRates(plainMarkets, fixedUsdRates)
   debug('Coingecko success next updating rates...')
+
+  console.log('TACA ===> Market.js, updateAllMarketData, marketRates = ', marketRates)
 
   const LATEST_ASSET_MAP = {}
   await Bluebird.map(
