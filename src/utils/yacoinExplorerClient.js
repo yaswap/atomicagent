@@ -10,7 +10,6 @@ class YacoinExplorer {
     debug(`Getting YAC rate from Yacoin Explorer`)
     const { data } = await this._axios.get(`/getprice`)
 
-    console.log('TACA ===> yacoinExplorerClient.js, data = ', data)
     return data['price']
   }
 }
