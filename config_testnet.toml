@@ -9,7 +9,7 @@ uri = "redis://localhost:6379/1"
 apiPort = 3030
 queuePassword = "test123"
 queuePasswordRW = "secretRWTest123"
-quoteExpirationInSeconds = 1800
+quoteExpirationInSeconds = 43200
 nodeSwapExpirationDurationInSeconds = 43200
 swapExpirationDurationInSeconds = 86400
 
@@ -41,9 +41,9 @@ killswitch = 'pm2 stop "Worker"'
     type = "js"
     mnemonic = "snack country horror material trash seven fossil slim pet soft impose priority"
     [assets.BTC.api]
-    url = "https://liquality.io/testnet/electrs/"
+    url = "https://electrs-testnet-api.liq-chainhub.net/"
     [assets.BTC.batchApi]
-    url = "https://liquality.io/electrs-testnet-batch/"
+    url = "https://electrs-batch-testnet-api.liq-chainhub.net/"
 
   [assets.YAC]
   network = "yacoin_testnet"
@@ -65,6 +65,6 @@ killswitch = 'pm2 stop "Worker"'
     type = "js"
     mnemonic = "snack country horror material trash seven fossil slim pet soft impose priority"
     [assets.ETH.scraper]
-    url = "https://eth-ropsten-api.liq-chainhub.net"
+    url = "http://localhost:8080"
     [assets.ETH.rpc]
     url = "https://ropsten.infura.io/v3/37efa691ffec4c41a60aa4a69865d8f6"
