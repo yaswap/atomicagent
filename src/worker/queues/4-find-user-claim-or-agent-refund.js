@@ -5,6 +5,15 @@ const debug = require('debug')('liquality:agent:worker:4-find-user-claim-or-agen
 const Order = require('../../models/Order')
 const { RescheduleError } = require('../../utils/errors')
 
+async function catchSwapCallError (func) {
+  try {
+    const result = await func()
+    return result
+  } catch (e) {
+    console.error(e)
+  }
+}
+
 async function process(job) {
   debug(job.data)
 
@@ -21,13 +30,18 @@ async function process(job) {
   const toClient = await order.toClient()
   let toCurrentBlockNumber
 
+  debug(`TACA ===> calling getBlockHeight`)
+
   try {
     toCurrentBlockNumber = await toClient.chain.getBlockHeight()
   } catch (e) {
     throw new RescheduleError(e.message, order.to)
   }
+  debug(`TACA ===> finished calling getBlockHeight, toCurrentBlockNumber = ${toCurrentBlockNumber}`)
 
-  const toClaimTx = await order.findToClaimSwapTransaction(toLastScannedBlock, toCurrentBlockNumber)
+  debug(`TACA ===> calling order.findToClaimSwapTransaction`)
+  const toClaimTx = await catchSwapCallError(async () => order.findToClaimSwapTransaction(toLastScannedBlock, toCurrentBlockNumber))
+  debug(`TACA ===> finished calling order.findToClaimSwapTransaction, toClaimTx = ${toClaimTx}`)
 
   if (!toClaimTx) {
     await job.update({
@@ -37,11 +51,14 @@ async function process(job) {
 
     let toCurrentBlock
 
+    debug(`TACA ===> calling getBlockByNumber with toCurrentBlockNumber = ${toCurrentBlockNumber}`)
+
     try {
       toCurrentBlock = await toClient.chain.getBlockByNumber(toCurrentBlockNumber)
     } catch (e) {
       throw new RescheduleError(e.message, order.to)
     }
+    debug(`TACA ===> finished calling getBlockByNumber, toCurrentBlock = ${toCurrentBlock}`)
 
     if (!order.isNodeSwapExpired(toCurrentBlock)) {
       await order.log('FIND_CLAIM_TX_OR_REFUND', 'AGENT_CLAIM_WAITING', {
