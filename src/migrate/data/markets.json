@@ -34,5 +34,17 @@
     "to": "YAC",
     "spread": 0,
     "status": "ACTIVE"
+  },
+  {
+    "from": "YAC",
+    "to": "FAU",
+    "spread": 0,
+    "status": "ACTIVE"
+  },
+  {
+    "from": "FAU",
+    "to": "YAC",
+    "spread": 0,
+    "status": "ACTIVE"
   }
 ]

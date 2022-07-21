@@ -68,3 +68,17 @@ killswitch = 'pm2 stop "Worker"'
     url = "http://localhost:8080"
     [assets.ETH.rpc]
     url = "https://ropsten.infura.io/v3/37efa691ffec4c41a60aa4a69865d8f6"
+
+  [assets.FAU]
+  network="ropsten"
+  type = "erc20"
+  blockTimeInSeconds = 5
+  contractAddress = "0xFab46E002BbF0b4509813474841E0716E6730136"
+  defaultFee = "average"
+    [assets.FAU.wallet]
+    type = "js"
+    mnemonic = "snack country horror material trash seven fossil slim pet soft impose priority"
+    [assets.FAU.scraper]
+    url = "http://localhost:8080"
+    [assets.FAU.rpc]
+    url = "https://ropsten.infura.io/v3/37efa691ffec4c41a60aa4a69865d8f6"

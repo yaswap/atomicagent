@@ -89,6 +89,10 @@ MarketSchema.static('updateAllMarketData', async function () {
       acc[asset.code] = yacoinPrice
     }
 
+    if (asset.code == 'FAU') {
+      acc[asset.code] = 1
+    }
+
     return acc
   }, {})
 
