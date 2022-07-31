@@ -110,12 +110,20 @@ MarketSchema.static('updateAllMarketData', async function () {
       await MarketHistory.logRate([asset.code, 'USD'].join('-'), mkt.usd[asset.code])
 
       try {
+        console.log("TACA ===> Market.js, updateAllMarketData ", asset.code, ", getting client")
         const client = await asset.getClient()
+        console.log("TACA ===> Market.js, updateAllMarketData ", asset.code, ", client = ", client)
+        console.log("TACA ===> Market.js, updateAllMarketData ", asset.code, ", getting used address")
         const addresses = await client.wallet.getUsedAddresses()
+        console.log("TACA ===> Market.js, updateAllMarketData ", asset.code, ", usedAddresses = ", addresses)
+        console.log("TACA ===> Market.js, updateAllMarketData ", asset.code, ", getting balance")
         asset.balance = addresses.length === 0 ? 0 : await client.chain.getBalance(addresses)
+        console.log("TACA ===> Market.js, updateAllMarketData ", asset.code, ", balance = ", asset.balance)
 
         try {
+          console.log("TACA ===> Market.js, updateAllMarketData ", asset.code, ", getting unused address")
           const address = (await client.wallet.getUnusedAddress()).address
+          console.log("TACA ===> Market.js, updateAllMarketData ", asset.code, ", unused address = ", address)
           asset.address = chains[ASSETS[asset.code].chain].formatAddress(address)
         } catch (e) {
           // ignore if this snippet fails
