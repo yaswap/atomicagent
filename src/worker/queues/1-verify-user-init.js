@@ -52,7 +52,9 @@ async function process(job) {
 
   debug('Found & verified funding transaction', order.orderId, order.fromFundHash)
 
+  debug('TACA ===> calling order.findFromFundSwapTransaction()')
   const fromSecondaryFundTx = await order.findFromFundSwapTransaction()
+  debug('TACA ===> fromSecondaryFundTx ', fromSecondaryFundTx)
 
   if (fromSecondaryFundTx) {
     order.addTx('fromSecondaryFundHash', fromSecondaryFundTx)
