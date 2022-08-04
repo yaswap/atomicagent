@@ -519,9 +519,8 @@ OrderSchema.methods.verifyInitiateSwapTransaction = async function () {
 
 OrderSchema.methods.findFromFundSwapTransaction = async function () {
   const fromClient = await this.fromClient()
-  console.log("TACA ===> Order.js, findFromFundSwapTransaction, fromClient = ", fromClient)
+
   return withRetry(this.from, async () => {
-    console.log("TACA ===> Order.js, findFromFundSwapTransaction, calling findFundSwapTransaction")
     return fromClient.swap.findFundSwapTransaction(
       {
         value: BN(this.fromAmount),
