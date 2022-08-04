@@ -7,6 +7,7 @@ const { assets } = require('@liquality/cryptoassets')
 const { v4: uuidv4 } = require('uuid')
 
 const config = require('../config')
+const Order = require('../models/Order')
 const reportError = require('../utils/reportError')
 
 let client
@@ -160,7 +161,16 @@ module.exports.start = async () => {
         reportError(err, { queueName: q.name, orderId: job.data?.orderId }, { job })
       }
 
-      if (['UpdateMarketData', 'VerifyTx'].includes(q.name) || checkJobForRetry(err, job)) {
+      if (['VerifyTx'].includes(q.name)) {
+        const order = await Order.findOne({ orderId: job.data?.orderId }).exec()
+        if (order && !order.isAlreadySwapExpired()) {
+          debug('Retrying natively', job)
+          await job.retry()
+        }
+
+        return
+      }
+      else if (['UpdateMarketData'].includes(q.name) || checkJobForRetry(err, job)) {
         debug('Retrying natively', job)
         await job.retry()
         return

@@ -353,6 +353,16 @@ OrderSchema.methods.isNodeSwapExpired = function (toCurrentBlock) {
   return toCurrentBlock.timestamp >= this.nodeSwapExpiration
 }
 
+OrderSchema.methods.isAlreadySwapExpired = function () {
+  const now = Math.ceil(Date.now() / 1000)
+  return now >= this.swapExpiration
+}
+
+OrderSchema.methods.isAlreadyNodeSwapExpired = function () {
+  const now = Math.ceil(Date.now() / 1000)
+  return now >= this.nodeSwapExpiration
+}
+
 OrderSchema.methods.addTx = function (type, tx) {
   if (!type) throw new Error('Invalid type')
   if (!tx || !(tx.placeholder || tx.hash)) throw new Error('Invalid tx')
