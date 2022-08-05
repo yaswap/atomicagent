@@ -26,6 +26,11 @@ const checkJobForRetry = (err, job) => {
   // retrying the timeout jobs only for the below specific jobs
   if (!err || !err.message || !job) return false
 
+  if (err.message.includes('timeout of 60000ms exceeded'))
+  {
+    return true
+  }
+
   if (
     ['4-find-user-claim-or-agent-refund'].includes(job.name) &&
     (err.message.includes('timeout of 30000ms exceeded') ||
