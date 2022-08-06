@@ -37,12 +37,12 @@
   },
   {
     "from": "YAC",
-    "to": "FAU",
+    "to": "USDT",
     "spread": 0,
     "status": "ACTIVE"
   },
   {
-    "from": "FAU",
+    "from": "USDT",
     "to": "YAC",
     "spread": 0,
     "status": "ACTIVE"
