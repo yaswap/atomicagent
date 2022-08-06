@@ -19,6 +19,8 @@ const bclients = []
 let mainQueue
 let verifyTxQueue
 let updateMarketDataQueue
+let updateMarketTimeoutAction
+const updateMarketTimeout = 300000
 const queueArr = []
 const QUEUES_DIR = path.join(__dirname, 'queues')
 
@@ -128,6 +130,11 @@ const addUniqueJob = (q, name, data = {}, opts = {}) => {
 
 module.exports.addUniqueJob = addUniqueJob
 
+const exit = () => {
+  debug(`Self-terminate due to UpdateMarketData hangs in 5 minutes !!!`)
+  process.kill(process.pid, "SIGTERM");
+}
+
 module.exports.start = async () => {
   if (mainQueue) throw new Error('Worker is already running')
 
@@ -152,7 +159,18 @@ module.exports.start = async () => {
   queueArr.push(mainQueue, verifyTxQueue, updateMarketDataQueue)
 
   queueArr.forEach((q) => {
-    q.on('completed', async (_, result) => {
+    q.on('completed', async (job, result) => {
+      debug(`[completed] Job "${job.name}" in queue "${q.name}" was completed`)
+
+      if (['UpdateMarketData'].includes(q.name)) {
+        debug(`Delete timeout action ${updateMarketTimeoutAction} for job "${job.name}" in queue "${q.name}"`)
+        clearTimeout(updateMarketTimeoutAction);
+        updateMarketTimeoutAction = setTimeout(function(){
+            exit()
+        }, updateMarketTimeout);
+        debug(`Add timeout action ${updateMarketTimeoutAction} for job "${job.name}" in queue "${q.name}"`)
+      }
+
       if (!result?.next) return
 
       result.next.forEach((newJob) => {
@@ -162,6 +180,8 @@ module.exports.start = async () => {
     })
 
     q.on('failed', async (job, err) => {
+      debug(`[failed] Job "${job.name}" in queue "${q.name}" was failed`)
+
       if (err.name !== 'RescheduleError') {
         reportError(err, { queueName: q.name, orderId: job.data?.orderId }, { job })
       }
@@ -175,7 +195,19 @@ module.exports.start = async () => {
 
         return
       }
-      else if (['UpdateMarketData'].includes(q.name) || checkJobForRetry(err, job)) {
+      else if (['UpdateMarketData'].includes(q.name)) {
+        debug(`Delete timeout action ${updateMarketTimeoutAction} for job "${job.name}" in queue "${q.name}"`)
+        clearTimeout(updateMarketTimeoutAction);
+        updateMarketTimeoutAction = setTimeout(function(){
+            exit()
+        }, updateMarketTimeout);
+        debug(`Add timeout action ${updateMarketTimeoutAction} for job "${job.name}" in queue "${q.name}"`)
+
+        debug('Retrying natively', job)
+        await job.retry()
+        return
+      }
+      else if (checkJobForRetry(err, job)) {
         debug('Retrying natively', job)
         await job.retry()
         return
@@ -199,6 +231,7 @@ module.exports.start = async () => {
     })
 
     q.on('error', (err) => {
+      debug(`[error] Queue "${q.name}" has error`)
       reportError(err, { queueName: q.name })
     })
 

@@ -13,6 +13,11 @@ const mongo = require('./utils/mongo')
 
 mongo.connect()
 
+const exit = () => {
+  console.log("Force exit !!!")
+  process.exit(0)
+}
+
 async function start() {
   await worker.start()
   api.start()
@@ -22,10 +27,32 @@ function stop(signal) {
   return async function () {
     console.log('Received', signal)
 
-    await worker.stop()
-    await api.stop()
-    await mongo.disconnect()
-    process.exit(0)
+    setTimeout(function () {
+      exit()
+    }, 10000)
+
+    if (signal === 'SIGINT')
+    {
+      console.log('Stop worker')
+      await worker.stop()
+      console.log('Stop api')
+      await api.stop()
+      console.log('Stop mongo')
+      await mongo.disconnect()
+      console.log('Exit ...')
+      process.exit(0)
+    }
+    else
+    {
+      console.log('Stop mongo')
+      await mongo.disconnect()
+      console.log('Stop api')
+      await api.stop()
+      console.log('Stop worker')
+      await worker.stop()
+      console.log("Exit")
+      process.exit(0)
+    }
   }
 }
 
