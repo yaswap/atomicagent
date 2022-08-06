@@ -1,0 +1,50 @@
+[
+  {
+    "from": "BTC",
+    "to": "ETH",
+    "spread": 0,
+    "status": "ACTIVE"
+  },
+  {
+    "from": "ETH",
+    "to": "BTC",
+    "spread": 0,
+    "status": "ACTIVE"
+  },
+  {
+    "from": "YAC",
+    "to": "ETH",
+    "spread": 0,
+    "status": "ACTIVE"
+  },
+  {
+    "from": "ETH",
+    "to": "YAC",
+    "spread": 0,
+    "status": "ACTIVE"
+  },
+  {
+    "from": "YAC",
+    "to": "BTC",
+    "spread": 0,
+    "status": "ACTIVE"
+  },
+  {
+    "from": "BTC",
+    "to": "YAC",
+    "spread": 0,
+    "status": "ACTIVE"
+  },
+  {
+    "from": "YAC",
+    "to": "FAU",
+    "spread": 0,
+    "status": "ACTIVE"
+  },
+  {
+    "from": "FAU",
+    "to": "YAC",
+    "spread": 0,
+    "status": "ACTIVE"
+  }
+]
