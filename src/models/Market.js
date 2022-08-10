@@ -149,8 +149,11 @@ MarketSchema.static('updateAllMarketData', async function () {
         config.assets[from].pegWith === to || config.assets[to].pegWith === from
           ? 1
           : marketRates.find((market) => market.from === from && market.to === to).rate
+      console.log("TACA ===> Market.js, market = ", market, ", rate = ", rate)
       const rateWithSpread = BN(rate).times(BN(1).minus(market.spread)).dp(8)
+      console.log("TACA ===> Market.js, market = ", market, ", rateWithSpread = ", rateWithSpread)
       const reverseMarketRate = BN(BN(1).div(rate)).times(BN(1).minus(market.spread)).dp(8)
+      console.log("TACA ===> Market.js, market = ", market, ", reverseMarketRate = ", reverseMarketRate)
 
       market.rate = rateWithSpread
       market.minConf = fromAsset.minConf
@@ -158,8 +161,10 @@ MarketSchema.static('updateAllMarketData', async function () {
 
       const toMaxAmount = BN(toAsset.balance).div(config.worker.minConcurrentSwaps)
       const toAssetMax = toAsset.max ? BN.min(toAsset.max, toMaxAmount) : toMaxAmount
+      console.log("TACA ===> Market.js, market = ", market, ", toAssetMax = ", toAssetMax)
 
       market.max = BN(fx.calculateToAmount(to, from, toAssetMax, reverseMarketRate)).dp(0, BN.ROUND_DOWN)
+      console.log("TACA ===> Market.js, market = ", market, ", market.max = ", market.max)
 
       await MarketHistory.logRate([market.from, market.to].join('-'), rateWithSpread)
 
