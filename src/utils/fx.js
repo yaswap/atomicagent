@@ -4,7 +4,6 @@ function calculateToAmount(from, to, fromAmount, rate) {
   const fromAmountBase = unitToCurrency(assets[from], fromAmount)
   const toBaseAmount = fromAmountBase.times(rate).toNumber()
   const toAmount = Math.floor(currencyToUnit(assets[to], toBaseAmount).toNumber())
-  console.log("TACA ===> calculateToAmount, from = ", from, ", to = ", to, ", fromAmount = ", fromAmount, ", rate = ", rate, ", fromAmountBase = ", fromAmountBase, ", toBaseAmount = ", toBaseAmount, ", toAmount = ", toAmount)
   return toAmount
 }
 
