@@ -1,9 +1,9 @@
-const { EthereumRpcProvider } = require('@liquality/ethereum-rpc-provider')
-const { EthereumJsWalletProvider } = require('@liquality/ethereum-js-wallet-provider')
-const { EthereumSwapProvider } = require('@liquality/ethereum-swap-provider')
-const { EthereumScraperSwapFindProvider } = require('@liquality/ethereum-scraper-swap-find-provider')
-const { EthereumRpcFeeProvider } = require('@liquality/ethereum-rpc-fee-provider')
-const { EthereumNetworks } = require('@liquality/ethereum-networks')
+const { EthereumRpcProvider } = require('@yac-swap/ethereum-rpc-provider')
+const { EthereumJsWalletProvider } = require('@yac-swap/ethereum-js-wallet-provider')
+const { EthereumSwapProvider } = require('@yac-swap/ethereum-swap-provider')
+const { EthereumScraperSwapFindProvider } = require('@yac-swap/ethereum-scraper-swap-find-provider')
+const { EthereumRpcFeeProvider } = require('@yac-swap/ethereum-rpc-fee-provider')
+const { EthereumNetworks } = require('@yac-swap/ethereum-networks')
 
 let network = EthereumNetworks.local
 

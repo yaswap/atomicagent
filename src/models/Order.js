@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 const { omitBy } = require('lodash')
 const { v4: uuidv4 } = require('uuid')
-const { assets, chains } = require('@liquality/cryptoassets')
+const { assets, chains } = require('@yac-swap/cryptoassets')
 const config = require('../config')
 const AuditLog = require('./AuditLog')
 const MarketHistory = require('./MarketHistory')

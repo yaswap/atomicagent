@@ -4,7 +4,7 @@ const program = require('commander')
 const Bluebird = require('bluebird')
 
 const { addCommonOptions } = require('./common')
-const { assets, currencyToUnit } = require('@liquality/cryptoassets')
+const { assets, currencyToUnit } = require('@yac-swap/cryptoassets')
 const mongo = require('../src/utils/mongo')
 const config = require('../src/config')
 

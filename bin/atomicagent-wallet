@@ -3,7 +3,7 @@
 const program = require('commander')
 const { addCommonOptions } = require('./common')
 const { getClient } = require('../src/utils/clients')
-const { assets, unitToCurrency, currencyToUnit } = require('@liquality/cryptoassets')
+const { assets, unitToCurrency, currencyToUnit } = require('@yac-swap/cryptoassets')
 const config = require('../src/config')
 
 addCommonOptions(program)

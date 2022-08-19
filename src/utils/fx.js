@@ -1,4 +1,4 @@
-const { assets, unitToCurrency, currencyToUnit } = require('@liquality/cryptoassets')
+const { assets, unitToCurrency, currencyToUnit } = require('@yac-swap/cryptoassets')
 
 function calculateToAmount(from, to, fromAmount, rate) {
   const fromAmountBase = unitToCurrency(assets[from], fromAmount)

@@ -3,7 +3,7 @@ const mongo = require('../../utils/mongo')
 const debug = require('debug')('liquality:agent:worker:verify-tx')
 
 const BN = require('bignumber.js')
-const { assets } = require('@liquality/cryptoassets')
+const { assets } = require('@yac-swap/cryptoassets')
 
 const { getClient } = require('../../utils/clients')
 const Order = require('../../models/Order')

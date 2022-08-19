@@ -1,9 +1,9 @@
-const { BitcoinEsploraBatchApiProvider } = require('@liquality/bitcoin-esplora-batch-api-provider')
-const { BitcoinJsWalletProvider } = require('@liquality/bitcoin-js-wallet-provider')
-const { BitcoinSwapProvider } = require('@liquality/bitcoin-swap-provider')
-const { BitcoinEsploraSwapFindProvider } = require('@liquality/bitcoin-esplora-swap-find-provider')
-const { BitcoinRpcFeeProvider } = require('@liquality/bitcoin-rpc-fee-provider')
-const { BitcoinNetworks } = require('@liquality/bitcoin-networks')
+const { BitcoinEsploraBatchApiProvider } = require('@yac-swap/bitcoin-esplora-batch-api-provider')
+const { BitcoinJsWalletProvider } = require('@yac-swap/bitcoin-js-wallet-provider')
+const { BitcoinSwapProvider } = require('@yac-swap/bitcoin-swap-provider')
+const { BitcoinEsploraSwapFindProvider } = require('@yac-swap/bitcoin-esplora-swap-find-provider')
+const { BitcoinRpcFeeProvider } = require('@yac-swap/bitcoin-rpc-fee-provider')
+const { BitcoinNetworks } = require('@yac-swap/bitcoin-networks')
 
 module.exports = [
   {
