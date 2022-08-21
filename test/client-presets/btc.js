@@ -1,9 +1,9 @@
-const { BitcoinEsploraBatchApiProvider } = require('@yac-swap/bitcoin-esplora-batch-api-provider')
-const { BitcoinJsWalletProvider } = require('@yac-swap/bitcoin-js-wallet-provider')
-const { BitcoinSwapProvider } = require('@yac-swap/bitcoin-swap-provider')
-const { BitcoinEsploraSwapFindProvider } = require('@yac-swap/bitcoin-esplora-swap-find-provider')
-const { BitcoinRpcFeeProvider } = require('@yac-swap/bitcoin-rpc-fee-provider')
-const { BitcoinNetworks } = require('@yac-swap/bitcoin-networks')
+const { BitcoinEsploraBatchApiProvider } = require('@yaswap/bitcoin-esplora-batch-api-provider')
+const { BitcoinJsWalletProvider } = require('@yaswap/bitcoin-js-wallet-provider')
+const { BitcoinSwapProvider } = require('@yaswap/bitcoin-swap-provider')
+const { BitcoinEsploraSwapFindProvider } = require('@yaswap/bitcoin-esplora-swap-find-provider')
+const { BitcoinRpcFeeProvider } = require('@yaswap/bitcoin-rpc-fee-provider')
+const { BitcoinNetworks } = require('@yaswap/bitcoin-networks')
 
 module.exports = [
   {

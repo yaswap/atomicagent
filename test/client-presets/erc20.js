@@ -1,10 +1,10 @@
-const { EthereumRpcProvider } = require('@yac-swap/ethereum-rpc-provider')
-const { EthereumJsWalletProvider } = require('@yac-swap/ethereum-js-wallet-provider')
-const { EthereumErc20Provider } = require('@yac-swap/ethereum-erc20-provider')
-const { EthereumErc20SwapProvider } = require('@yac-swap/ethereum-erc20-swap-provider')
-const { EthereumErc20ScraperSwapFindProvider } = require('@yac-swap/ethereum-erc20-scraper-swap-find-provider')
-const { EthereumRpcFeeProvider } = require('@yac-swap/ethereum-rpc-fee-provider')
-const { EthereumNetworks } = require('@yac-swap/ethereum-networks')
+const { EthereumRpcProvider } = require('@yaswap/ethereum-rpc-provider')
+const { EthereumJsWalletProvider } = require('@yaswap/ethereum-js-wallet-provider')
+const { EthereumErc20Provider } = require('@yaswap/ethereum-erc20-provider')
+const { EthereumErc20SwapProvider } = require('@yaswap/ethereum-erc20-swap-provider')
+const { EthereumErc20ScraperSwapFindProvider } = require('@yaswap/ethereum-erc20-scraper-swap-find-provider')
+const { EthereumRpcFeeProvider } = require('@yaswap/ethereum-rpc-fee-provider')
+const { EthereumNetworks } = require('@yaswap/ethereum-networks')
 
 let network = EthereumNetworks.local
 

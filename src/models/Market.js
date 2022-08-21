@@ -3,7 +3,7 @@ const mongoose = require('mongoose')
 
 const Bluebird = require('bluebird')
 const BN = require('bignumber.js')
-const { assets: ASSETS, chains, unitToCurrency } = require('@yac-swap/cryptoassets')
+const { assets: ASSETS, chains, unitToCurrency } = require('@yaswap/cryptoassets')
 
 const Asset = require('./Asset')
 const MarketHistory = require('./MarketHistory')

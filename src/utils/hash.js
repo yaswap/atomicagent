@@ -1,4 +1,4 @@
-const { chains, assets } = require('@yac-swap/cryptoassets')
+const { chains, assets } = require('@yaswap/cryptoassets')
 module.exports.formatTxHash = function (hash, asset) {
   if (!assets[asset]) {
     return false

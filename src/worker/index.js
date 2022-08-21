@@ -3,7 +3,7 @@ const fs = require('fs').promises
 const path = require('path')
 const Queue = require('bull')
 const Redis = require('ioredis')
-const { assets } = require('@yac-swap/cryptoassets')
+const { assets } = require('@yaswap/cryptoassets')
 const { v4: uuidv4 } = require('uuid')
 
 const config = require('../config')
