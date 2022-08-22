@@ -54,8 +54,8 @@ killswitch = 'pm2 stop "Worker"'
     type = "js"
     mnemonic = "snack country horror material trash seven fossil slim pet soft impose priority"
     [assets.YAC.api]
-    esploraUrl = "http://localhost:3001/api"
-    esploraSwapUrl = "http://localhost:3001"
+    esploraUrl = "http://104.48.189.74:3001/api"
+    esploraSwapUrl = "http://104.48.189.74:3001"
 
   [assets.ETH]
   network="ethereum_mainnet"
