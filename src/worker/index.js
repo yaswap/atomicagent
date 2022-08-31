@@ -135,6 +135,15 @@ const exit = () => {
   process.kill(process.pid, "SIGTERM");
 }
 
+const setUpdateMarketTimer = (jobName, queueName) => {
+  debug(`Delete timeout action ${updateMarketTimeoutAction} for job "${jobName}" in queue "${queueName}"`)
+  clearTimeout(updateMarketTimeoutAction);
+  updateMarketTimeoutAction = setTimeout(function(){
+      exit()
+  }, updateMarketTimeout);
+  debug(`Add timeout action ${updateMarketTimeoutAction} for job "${jobName}" in queue "${queueName}"`)
+}
+
 module.exports.start = async () => {
   if (mainQueue) throw new Error('Worker is already running')
 
@@ -163,12 +172,7 @@ module.exports.start = async () => {
       debug(`[completed] Job "${job.name}" in queue "${q.name}" was completed`)
 
       if (['UpdateMarketData'].includes(q.name)) {
-        debug(`Delete timeout action ${updateMarketTimeoutAction} for job "${job.name}" in queue "${q.name}"`)
-        clearTimeout(updateMarketTimeoutAction);
-        updateMarketTimeoutAction = setTimeout(function(){
-            exit()
-        }, updateMarketTimeout);
-        debug(`Add timeout action ${updateMarketTimeoutAction} for job "${job.name}" in queue "${q.name}"`)
+        setUpdateMarketTimer(job.name, q.name)
       }
 
       if (!result?.next) return
@@ -196,12 +200,7 @@ module.exports.start = async () => {
         return
       }
       else if (['UpdateMarketData'].includes(q.name)) {
-        debug(`Delete timeout action ${updateMarketTimeoutAction} for job "${job.name}" in queue "${q.name}"`)
-        clearTimeout(updateMarketTimeoutAction);
-        updateMarketTimeoutAction = setTimeout(function(){
-            exit()
-        }, updateMarketTimeout);
-        debug(`Add timeout action ${updateMarketTimeoutAction} for job "${job.name}" in queue "${q.name}"`)
+        setUpdateMarketTimer(job.name, q.name)
 
         debug('Retrying natively', job)
         await job.retry()
@@ -233,15 +232,22 @@ module.exports.start = async () => {
     q.on('error', (err) => {
       debug(`[error] Queue "${q.name}" has error`)
       reportError(err, { queueName: q.name })
+      if (['UpdateMarketData'].includes(q.name)) {
+        setUpdateMarketTimer("empty job", q.name)
+      }
     })
 
     q.on('stalled', async (job) => {
       const err = new Error('Job has stalled')
       reportError(err, { queueName: q.name, orderId: job.data?.orderId }, { job })
+      if (['UpdateMarketData'].includes(q.name)) {
+        setUpdateMarketTimer(job.name, q.name)
+      }
     })
   })
 
   // kickoff market data update
+  setUpdateMarketTimer("starting job", "UpdateMarketData")
   addUniqueJob(updateMarketDataQueue, 'UpdateMarketData')
 }
 
