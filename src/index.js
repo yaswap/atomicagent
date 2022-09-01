@@ -1,4 +1,5 @@
 const Sentry = require('@sentry/node')
+const fs = require('fs')
 
 // Enable Sentry (for production only)
 if (process.env.NODE_ENV === 'production') {
@@ -19,6 +20,13 @@ const exit = () => {
 }
 
 async function start() {
+  var fname = 'atomicagent.pid';
+  fs.writeFile(fname, process.pid.toString(), function (err) {
+    if (err) {
+      console.log("Error: unable to write to %s", fname);
+      process.exit(1);
+    }
+  });
   await worker.start()
   api.start()
 }

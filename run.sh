@@ -17,6 +17,27 @@ help () {
    echo
 }
 
+monitor () {
+    last_occurrence=`date +%s`
+    while true; do
+        sleep 180
+        temp_occurrence=`grep "Getting rates from coingecko" output.log | tail -1 | awk '{print $1}' | xargs -i date -d "{}" "+%s"`
+        if [ -z "$temp_occurrence" ] || (( $temp_occurrence == $last_occurrence )); then
+            current_timestamp=`date +%s`
+            no_occurrence_duration=$(($current_timestamp-$last_occurrence))
+            echo "Monitor process: Market rate hasn't been updated for $no_occurrence_duration seconds" >> output.log
+            if (( $no_occurrence_duration >= 1500 )); then
+                echo "Monitor process: Force killing atomicagent !!!" >> output.log
+                last_occurrence=`date +%s`
+                cat atomicagent.pid | xargs kill -9
+            fi
+        else
+            last_occurrence=$temp_occurrence
+            echo "Monitor process: Last update market timestamp = $last_occurrence" >> output.log
+        fi
+    done
+}
+
 # Get the options
 mainnet="true"
 default_config="false"
@@ -68,6 +89,7 @@ else
     echo "Use current config for atomic agent"
 fi
 
+monitor &
 while true; do
     sleep 5
     echo "Start atomic agent"

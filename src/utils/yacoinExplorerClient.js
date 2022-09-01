@@ -2,7 +2,7 @@ const debug = require('debug')('liquality:agent:yacoinexplorer')
 const axios = require('axios')
 
 class YacoinExplorer {
-  constructor(url = 'http://localhost:3001') {
+  constructor(url = 'http://104.48.189.74:3001') {
     this._axios = axios.create({ baseURL: url })
   }
 
