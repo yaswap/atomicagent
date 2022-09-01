@@ -72,7 +72,7 @@ router.post(
     }
 
     const lastUpdatedAgo = dateFns.differenceInSeconds(new Date(), market.updatedAt)
-    if (lastUpdatedAgo > 120) {
+    if (lastUpdatedAgo > 300) {
       return res.notOk(400, `Market rate is outdated: ${body.from}-${body.to} (Last updated ${lastUpdatedAgo}s ago)`)
     }
 
