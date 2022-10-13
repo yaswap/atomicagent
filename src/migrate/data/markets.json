@@ -1,24 +1,6 @@
 [
   {
     "from": "BTC",
-    "to": "ETH",
-    "spread": 0.05,
-    "status": "ACTIVE"
-  },
-  {
-    "from": "ETH",
-    "to": "BTC",
-    "spread": 0.05,
-    "status": "ACTIVE"
-  },
-  {
-    "from": "YAC",
-    "to": "ETH",
-    "spread": 0.9,
-    "status": "ACTIVE"
-  },
-  {
-    "from": "ETH",
     "to": "YAC",
     "spread": 0.01,
     "status": "ACTIVE"
@@ -31,6 +13,24 @@
   },
   {
     "from": "BTC",
+    "to": "ETH",
+    "spread": 0.05,
+    "status": "ACTIVE"
+  },
+  {
+    "from": "ETH",
+    "to": "BTC",
+    "spread": 0.05,
+    "status": "ACTIVE"
+  },
+  {
+    "from": "YAC",
+    "to": "ETH",
+    "spread": 0.9,
+    "status": "ACTIVE"
+  },
+  {
+    "from": "ETH",
     "to": "YAC",
     "spread": 0.01,
     "status": "ACTIVE"
