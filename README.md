@@ -110,7 +110,7 @@ npm start
 |-----------------------|---------|--------------------------------------------------------|
 | Bitcoin Electrs       | Testnet | https://liquality.io/testnet/electrs                   |
 | Bitcoin Batch Electrs | Testnet | https://liquality.io/electrs-testnet-batch             |
-| Ethereum Scraper      | Testnet | https://liquality.io/eth-ropsten-api                   |
+| Ethereum Scraper      | Testnet | https://liquality.io/eth-goerli-api                   |
 | RSK Scraper           | Testnet | https://liquality.io/rsk-testnet-api                   |
 | BSC Scraper           | Testnet | https://liquality.io/bsc-testnet-api                   |
 | Polygon Scraper       | Testnet | https://liquality.io/polygon-testnet-api/              |

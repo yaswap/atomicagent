@@ -39,7 +39,7 @@ killswitch = 'pm2 stop "Worker"'
   defaultFee = "average"
     [assets.BTC.wallet]
     type = "js"
-    mnemonic = "snack country horror material trash seven fossil slim pet soft impose priority"
+    mnemonic = "salad wreck holiday immune example derive cause scene swim you title march"
     [assets.BTC.api]
     url = "https://electrs-testnet-api.liq-chainhub.net/"
     [assets.BTC.batchApi]
@@ -52,33 +52,33 @@ killswitch = 'pm2 stop "Worker"'
   defaultFee = "average"
     [assets.YAC.wallet]
     type = "js"
-    mnemonic = "snack country horror material trash seven fossil slim pet soft impose priority"
+    mnemonic = "salad wreck holiday immune example derive cause scene swim you title march"
     [assets.YAC.api]
     esploraUrl = "http://localhost:3001/api"
     esploraSwapUrl = "http://localhost:3001"
 
   [assets.ETH]
-  network="ropsten"
+  network="goerli"
   blockTimeInSeconds = 5
   defaultFee = "average"
     [assets.ETH.wallet]
     type = "js"
-    mnemonic = "snack country horror material trash seven fossil slim pet soft impose priority"
+    mnemonic = "salad wreck holiday immune example derive cause scene swim you title march"
     [assets.ETH.scraper]
     url = "http://localhost:8080"
     [assets.ETH.rpc]
-    url = "https://ropsten.infura.io/v3/37efa691ffec4c41a60aa4a69865d8f6"
+    url = "https://goerli.infura.io/v3/37efa691ffec4c41a60aa4a69865d8f6"
 
-  [assets.FAU]
-  network="ropsten"
+  [assets.DAI]
+  network="goerli"
   type = "erc20"
   blockTimeInSeconds = 5
-  contractAddress = "0xFab46E002BbF0b4509813474841E0716E6730136"
+  contractAddress = "0x11fE4B6AE13d2a6055C8D9cF65c55bac32B5d844"
   defaultFee = "average"
-    [assets.FAU.wallet]
+    [assets.DAI.wallet]
     type = "js"
-    mnemonic = "snack country horror material trash seven fossil slim pet soft impose priority"
-    [assets.FAU.scraper]
+    mnemonic = "salad wreck holiday immune example derive cause scene swim you title march"
+    [assets.DAI.scraper]
     url = "http://localhost:8080"
-    [assets.FAU.rpc]
-    url = "https://ropsten.infura.io/v3/37efa691ffec4c41a60aa4a69865d8f6"
+    [assets.DAI.rpc]
+    url = "https://goerli.infura.io/v3/37efa691ffec4c41a60aa4a69865d8f6"

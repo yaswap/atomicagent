@@ -39,7 +39,7 @@ killswitch = 'pm2 stop "Worker"'
   defaultFee = "average"
     [assets.BTC.wallet]
     type = "js"
-    mnemonic = "snack country horror material trash seven fossil slim pet soft impose priority"
+    mnemonic = "salad wreck holiday immune example derive cause scene swim you title march"
     [assets.BTC.api]
     url = "https://electrs-mainnet-api.liq-chainhub.net/"
     [assets.BTC.batchApi]
@@ -52,7 +52,7 @@ killswitch = 'pm2 stop "Worker"'
   defaultFee = "average"
     [assets.YAC.wallet]
     type = "js"
-    mnemonic = "snack country horror material trash seven fossil slim pet soft impose priority"
+    mnemonic = "salad wreck holiday immune example derive cause scene swim you title march"
     [assets.YAC.api]
     esploraUrl = "http://localhost:3001/api"
     esploraSwapUrl = "http://localhost:3001"
@@ -63,7 +63,7 @@ killswitch = 'pm2 stop "Worker"'
   defaultFee = "average"
     [assets.ETH.wallet]
     type = "js"
-    mnemonic = "snack country horror material trash seven fossil slim pet soft impose priority"
+    mnemonic = "salad wreck holiday immune example derive cause scene swim you title march"
     [assets.ETH.scraper]
     url = "http://localhost:8081"
     [assets.ETH.rpc]
@@ -77,7 +77,7 @@ killswitch = 'pm2 stop "Worker"'
   defaultFee = "average"
     [assets.USDT.wallet]
     type = "js"
-    mnemonic = "snack country horror material trash seven fossil slim pet soft impose priority"
+    mnemonic = "salad wreck holiday immune example derive cause scene swim you title march"
     [assets.USDT.scraper]
     url = "http://localhost:8081"
     [assets.USDT.rpc]
