@@ -2,61 +2,49 @@
   {
     "from": "BTC",
     "to": "YAC",
-    "spread": 0,
+    "spread": 0.01,
     "status": "ACTIVE"
   },
   {
     "from": "YAC",
     "to": "BTC",
-    "spread": 0,
+    "spread": 0.9,
     "status": "ACTIVE"
   },
   {
     "from": "BTC",
     "to": "ETH",
-    "spread": 0,
+    "spread": 0.05,
     "status": "ACTIVE"
   },
   {
     "from": "ETH",
     "to": "BTC",
-    "spread": 0,
+    "spread": 0.05,
     "status": "ACTIVE"
   },
   {
     "from": "YAC",
     "to": "ETH",
-    "spread": 0,
+    "spread": 0.9,
     "status": "ACTIVE"
   },
   {
     "from": "ETH",
     "to": "YAC",
-    "spread": 0,
+    "spread": 0.01,
     "status": "ACTIVE"
   },
   {
     "from": "YAC",
-    "to": "DAI",
-    "spread": 0,
+    "to": "USDT",
+    "spread": 0.9,
     "status": "ACTIVE"
   },
   {
-    "from": "DAI",
+    "from": "USDT",
     "to": "YAC",
-    "spread": 0,
-    "status": "ACTIVE"
-  },
-  {
-    "from": "BTC",
-    "to": "DAI",
-    "spread": 0,
-    "status": "ACTIVE"
-  },
-  {
-    "from": "DAI",
-    "to": "BTC",
-    "spread": 0,
+    "spread": 0.01,
     "status": "ACTIVE"
   }
 ]

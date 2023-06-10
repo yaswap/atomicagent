@@ -2,16 +2,16 @@
   {
     "code": "BTC",
     "balance": 0,
-    "min": 10000,
+    "min": 5000,
     "max": 50000000,
     "minConf": 1
   },
   {
     "code": "ETH",
     "balance": 0,
-    "min": 1000000000000000,
+    "min": 2000000000000000,
     "max": 10000000000000000000,
-    "minConf": 1
+    "minConf": 12
   },
   {
     "code": "YAC",
@@ -21,10 +21,10 @@
     "minConf": 1
   },
   {
-    "code": "DAI",
+    "code": "USDT",
     "balance": 0,
-    "min": 1000000000000000000,
+    "min": 2000000,
     "max": 1000000000000000000000,
-    "minConf": 1
+    "minConf": 12
   }
 ]
