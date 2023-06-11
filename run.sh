@@ -4,6 +4,10 @@ SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 cd $SCRIPT_DIR
 nvm use
 
+# 7 days shrink log
+log_shrink_duration="604800"
+occurrence_duration="1500"
+
 help () {
    # Display Help
    echo "Script to run atomic agent"
@@ -19,14 +23,15 @@ help () {
 
 monitor () {
     last_occurrence=`date +%s`
+    last_log_shrink=`date +%s`
     while true; do
         sleep 180
+        current_timestamp=`date +%s`
         temp_occurrence=`grep "Getting rates from coingecko" output.log | tail -1 | awk '{print $1}' | xargs -i date -d "{}" "+%s"`
         if [ -z "$temp_occurrence" ] || (( $temp_occurrence == $last_occurrence )); then
-            current_timestamp=`date +%s`
             no_occurrence_duration=$(($current_timestamp-$last_occurrence))
             echo "Monitor process: Market rate hasn't been updated for $no_occurrence_duration seconds" >> output.log
-            if (( $no_occurrence_duration >= 1500 )); then
+            if (( $no_occurrence_duration >= $occurrence_duration )); then
                 echo "Monitor process: Force killing atomicagent !!!" >> output.log
                 last_occurrence=`date +%s`
                 cat atomicagent.pid | xargs kill -9
@@ -34,6 +39,11 @@ monitor () {
         else
             last_occurrence=$temp_occurrence
             echo "Monitor process: Last update market timestamp = $last_occurrence" >> output.log
+        fi
+        no_shrink_duration=$(($current_timestamp-$last_log_shrink))
+        if (( $no_shrink_duration >= $log_shrink_duration )); then
+            echo "" > output.log
+            last_log_shrink=`date +%s`
         fi
     done
 }
