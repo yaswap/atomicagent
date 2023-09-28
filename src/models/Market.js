@@ -150,7 +150,8 @@ MarketSchema.static('updateAllMarketData', async function () {
           ? 1
           : marketRates.find((market) => market.from === from && market.to === to).rate
       const rateWithSpread = BN(rate).times(BN(1).minus(market.spread)).dp(8)
-      const reverseMarketRate = BN(BN(1).div(rate)).times(BN(1).minus(market.spread)).dp(8)
+      const reverseMarketRate = BN(1).div(rateWithSpread).dp(8)
+      // const reverseMarketRate = BN(BN(1).div(rate)).times(BN(1).minus(market.spread)).dp(8)
 
       market.rate = rateWithSpread
       market.minConf = fromAsset.minConf
