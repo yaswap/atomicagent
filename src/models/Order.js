@@ -531,6 +531,10 @@ OrderSchema.methods.findFromFundSwapTransaction = async function () {
   const fromClient = await this.fromClient()
   const asset = getChainifyAsset(this.from)
 
+  if (asset.type !== 'erc20') {
+    return null
+  }
+
   return withRetry(this.from, async () => {
     return fromClient.swap.findFundSwapTransaction(
       {
