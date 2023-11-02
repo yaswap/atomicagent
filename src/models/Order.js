@@ -486,6 +486,10 @@ OrderSchema.methods.fundSwap = async function () {
   const { defaultFee } = config.assets[this.to]
   const asset = getChainifyAsset(this.to)
 
+  if (asset.type !== 'erc20') {
+    return null
+  }
+
   return withRetry(this.to, async () => {
     const fees = await toClient.chain.getFees()
 
