@@ -41,9 +41,9 @@ killswitch = 'pm2 stop "Worker"'
     [assets.BTC.wallet]
     mnemonic = "salad wreck holiday immune example derive cause scene swim you title march"
     [assets.BTC.api]
-    url = "https://electrs-testnet-api.liq-chainhub.net/"
+    url = "https://mempool.space/testnet/api"
     [assets.BTC.batchApi]
-    url = "https://electrs-batch-testnet-api.liq-chainhub.net/"
+    url = "https://mempool.space/testnet/api"
 
   [assets.YAC]
   network = "yacoin_testnet"
