@@ -114,9 +114,7 @@ MarketSchema.static('updateAllMarketData', async function () {
         const addresses = await client.wallet.getUsedAddresses()
 
         const _assets = getChainifyAsset(asset.code)
-        debug('TACA ===> ', asset.code, ', address = ', addresses, ', _assets = ', _assets)
         asset.balance = addresses.length === 0 ? 0 : (await client.chain.getBalance(addresses, [_assets]))[0].toNumber()
-        debug('TACA ===> ', asset.code, ', balance = ', asset.balance)
 
         try {
           const address = (await client.wallet.getUnusedAddress()).address
