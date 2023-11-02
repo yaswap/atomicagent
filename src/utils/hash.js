@@ -1,15 +1,15 @@
-const { chains, assets } = require('@yaswap/cryptoassets')
+const { getAllAssetsInfo, getAssetChain } = require('./asset')
 module.exports.formatTxHash = function (hash, asset) {
-  if (!assets[asset]) {
+  if (!getAllAssetsInfo()[asset]) {
     return false
   }
-  return chains[assets[asset].chain].formatTransactionHash(hash)
+  return getAssetChain(asset).formatTransactionHash(hash)
 }
 module.exports.isValidTxHash = function (hash, asset) {
-  if (!assets[asset]) {
+  if (!getAllAssetsInfo()[asset]) {
     return false
   }
-  return chains[assets[asset].chain].isValidTransactionHash(hash)
+  return getAssetChain(asset).isValidTransactionHash(hash)
 }
 
 module.exports.isValidSecretHash = (secretHash) => /^([A-Fa-f0-9]{64})$/.test(secretHash)

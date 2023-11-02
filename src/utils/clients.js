@@ -1,344 +1,335 @@
-const { Client } = require('@liquality/client')
-const { assets } = require('@yaswap/cryptoassets')
+const { Client } = require('@yaswap/client')
+const { ChainId } = require('@yaswap/cryptoassets')
+const { getAssetChain } = require('./asset')
+const { ChainNetworks } = require('@yaswap/wallet-core/dist/src/utils/networks')
+const { getDerivationPath } = require('@yaswap/wallet-core/dist/src/utils/derivationPath')
 const config = require('../config')
 
 const secretManager = require('./secretManager')
 
-const { BitcoinRpcProvider } = require('@yaswap/bitcoin-rpc-provider')
-const { BitcoinSwapProvider } = require('@yaswap/bitcoin-swap-provider')
-const { BitcoinNodeWalletProvider } = require('@yaswap/bitcoin-node-wallet-provider')
-const { BitcoinJsWalletProvider } = require('@yaswap/bitcoin-js-wallet-provider')
-const { BitcoinEsploraBatchApiProvider } = require('@yaswap/bitcoin-esplora-batch-api-provider')
-const { BitcoinEsploraSwapFindProvider } = require('@yaswap/bitcoin-esplora-swap-find-provider')
-const { BitcoinFeeApiProvider } = require('@yaswap/bitcoin-fee-api-provider')
-const { BitcoinRpcFeeProvider } = require('@yaswap/bitcoin-rpc-fee-provider')
-const { BitcoinNetworks } = require('@yaswap/bitcoin-networks')
+const {
+  BitcoinEsploraApiProvider,
+  BitcoinFeeApiProvider,
+  BitcoinHDWalletProvider,
+  BitcoinSwapEsploraProvider
+} = require('@yaswap/bitcoin')
 
-const { YacoinSwapProvider } = require('@yaswap/yacoin-swap-provider')
-const { YacoinJsWalletProvider } = require('@yaswap/yacoin-js-wallet-provider')
-const { YacoinEsploraApiProvider } = require('@yaswap/yacoin-esplora-api-provider')
-const { YacoinEsploraSwapFindProvider } = require('@yaswap/yacoin-esplora-swap-find-provider')
-const { YacoinFeeApiProvider } = require('@yaswap/yacoin-fee-api-provider')
-const { YacoinNetworks } = require('@yaswap/yacoin-networks')
+const {
+  YacoinEsploraApiProvider,
+  YacoinFeeApiProvider,
+  YacoinHDWalletProvider,
+  YacoinSwapEsploraProvider,
+  YacoinNftProvider
+} = require('@yaswap/yacoin')
 
-const { EthereumRpcProvider } = require('@yaswap/ethereum-rpc-provider')
-const { EthereumJsWalletProvider } = require('@yaswap/ethereum-js-wallet-provider')
-const { EthereumSwapProvider } = require('@yaswap/ethereum-swap-provider')
-const { EthereumErc20Provider } = require('@yaswap/ethereum-erc20-provider')
-const { EthereumErc20SwapProvider } = require('@yaswap/ethereum-erc20-swap-provider')
-const { EthereumNetworks } = require('@yaswap/ethereum-networks')
-const { EthereumScraperSwapFindProvider } = require('@yaswap/ethereum-scraper-swap-find-provider')
-const { EthereumErc20ScraperSwapFindProvider } = require('@yaswap/ethereum-erc20-scraper-swap-find-provider')
-const { EthereumEIP1559FeeProvider } = require('@yaswap/ethereum-eip1559-fee-provider')
-const { EthereumRpcFeeProvider } = require('@yaswap/ethereum-rpc-fee-provider')
+// const {
+//   LitecoinEsploraApiProvider,
+//   LitecoinFeeApiProvider,
+//   LitecoinHDWalletProvider,
+//   LitecoinSwapEsploraProvider,
+//   LitecoinTypes,
+// } = require('@yaswap/litecoin');
 
-const { NearSwapProvider } = require('@liquality/near-swap-provider')
-const { NearJsWalletProvider } = require('@liquality/near-js-wallet-provider')
-const { NearRpcProvider } = require('@liquality/near-rpc-provider')
-const { NearSwapFindProvider } = require('@liquality/near-swap-find-provider')
-const { NearNetworks } = require('@liquality/near-networks')
+const {
+  EIP1559FeeProvider,
+  EvmChainProvider,
+  EvmWalletProvider,
+  EvmSwapProvider,
+  OptimismChainProvider,
+  RpcFeeProvider
+} = require('@yaswap/evm')
+const { StaticJsonRpcProvider } = require('@ethersproject/providers')
+const { asL2Provider } = require('@eth-optimism/sdk')
+// const { EthereumRpcProvider } = require('@yaswap/ethereum-rpc-provider')
+// const { EthereumJsWalletProvider } = require('@yaswap/ethereum-js-wallet-provider')
+// const { EthereumSwapProvider } = require('@yaswap/ethereum-swap-provider')
+// const { EthereumErc20Provider } = require('@yaswap/ethereum-erc20-provider')
+// const { EthereumErc20SwapProvider } = require('@yaswap/ethereum-erc20-swap-provider')
+// const { EthereumNetworks } = require('@yaswap/ethereum-networks')
+// const { EthereumScraperSwapFindProvider } = require('@yaswap/ethereum-scraper-swap-find-provider')
+// const { EthereumErc20ScraperSwapFindProvider } = require('@yaswap/ethereum-erc20-scraper-swap-find-provider')
+// const { EthereumEIP1559FeeProvider } = require('@yaswap/ethereum-eip1559-fee-provider')
+// const { EthereumRpcFeeProvider } = require('@yaswap/ethereum-rpc-fee-provider')
 
-const { SolanaNetworks } = require('@liquality/solana-networks')
-const { SolanaRpcProvider } = require('@liquality/solana-rpc-provider')
-const { SolanaWalletProvider } = require('@liquality/solana-wallet-provider')
-const { SolanaSwapProvider } = require('@liquality/solana-swap-provider')
-const { SolanaSwapFindProvider } = require('@liquality/solana-swap-find-provider')
+const { NearChainProvider, NearSwapProvider, NearWalletProvider } = require('@yaswap/near')
+const { SolanaChainProvider, SolanaNftProvider, SolanaWalletProvider } = require('@yaswap/solana')
 
-const { TerraNetworks } = require('@liquality/terra-networks')
-const { TerraRpcProvider } = require('@liquality/terra-rpc-provider')
-const { TerraWalletProvider } = require('@liquality/terra-wallet-provider')
-const { TerraSwapProvider } = require('@liquality/terra-swap-provider')
-const { TerraSwapFindProvider } = require('@liquality/terra-swap-find-provider')
-
-async function createBtcClient() {
+async function createBtcClient(chainifyNetwork, derivationPath) {
   const btcConfig = config.assets.BTC
-  const network = BitcoinNetworks[btcConfig.network]
+  const mnemonic = await secretManager.getMnemonic('BTC')
+  const isMainnet = !chainifyNetwork.isTestnet
 
-  if (btcConfig.addressType === 'p2sh-segwit') {
-    throw new Error('Wrapped segwit addresses (p2sh-segwit) are currently unsupported.')
+  // Create Chain provider
+  const chainProvider = new BitcoinEsploraApiProvider({
+    batchUrl: chainifyNetwork.batchScraperUrl,
+    url: chainifyNetwork.scraperUrl,
+    network: chainifyNetwork,
+    numberOfBlockConfirmation: btcConfig.feeNumberOfBlocks
+  })
+
+  if (isMainnet) {
+    const feeProvider = new BitcoinFeeApiProvider(chainifyNetwork.feeProviderUrl)
+    chainProvider.setFeeProvider(feeProvider)
   }
 
-  const btcClient = new Client()
-  if (btcConfig.wallet && btcConfig.wallet.type === 'js') {
-    const mnemonic = await secretManager.getMnemonic('BTC')
+  // Create swap provider
+  const swapProvider = new BitcoinSwapEsploraProvider({
+    network: chainifyNetwork,
+    scraperUrl: chainifyNetwork.scraperUrl,
+    mode: btcConfig.swapMode
+  })
 
-    btcClient.addProvider(
-      new BitcoinEsploraBatchApiProvider({
-        batchUrl: btcConfig.batchApi.url,
-        url: btcConfig.api.url,
-        network: network,
-        numberOfBlockConfirmation: btcConfig.feeNumberOfBlocks
-      })
-    )
-
-    btcClient.addProvider(
-      new BitcoinJsWalletProvider({
-        network: network,
-        mnemonic,
-        baseDerivationPath: `m/84'/${network.coinType}'/0'`
-      })
-    )
-  } else {
-    btcClient.addProvider(
-      new BitcoinRpcProvider({
-        uri: btcConfig.rpc.url,
-        username: btcConfig.rpc.username,
-        password: btcConfig.rpc.password,
-        network: network,
-        feeBlockConfirmations: btcConfig.feeNumberOfBlocks
-      })
-    )
-    btcClient.addProvider(
-      new BitcoinNodeWalletProvider({
-        network: network,
-        uri: btcConfig.rpc.url,
-        username: btcConfig.rpc.username,
-        password: btcConfig.rpc.password,
-        addressType: btcConfig.addressType
-      })
-    )
+  // Create wallet provider
+  const walletOptions = {
+    network: chainifyNetwork,
+    baseDerivationPath: derivationPath,
+    mnemonic
   }
 
-  btcClient.addProvider(
-    new BitcoinSwapProvider({
-      network: network,
-      mode: btcConfig.swapMode
-    })
-  )
+  const walletProvider = new BitcoinHDWalletProvider(walletOptions, chainProvider)
+  swapProvider.setWallet(walletProvider)
 
-  if (btcConfig.wallet && btcConfig.wallet.type === 'js') {
-    // Override swap finding with esplora
-    btcClient.addProvider(new BitcoinEsploraSwapFindProvider(btcConfig.api.url))
-  }
-
-  if (network.isTestnet) {
-    btcClient.addProvider(new BitcoinRpcFeeProvider())
-  } else {
-    btcClient.addProvider(new BitcoinFeeApiProvider('https://liquality.io/swap/mempool/v1/fees/recommended'))
-  }
-
-  return btcClient
+  return new Client().connect(swapProvider)
 }
 
-async function createYacClient() {
+async function createYacClient(chainifyNetwork, derivationPath) {
   const yacConfig = config.assets.YAC
-  const network = YacoinNetworks[yacConfig.network]
+  const mnemonic = await secretManager.getMnemonic('YAC')
+  const isMainnet = !chainifyNetwork.isTestnet
 
-  const yacClient = new Client()
-  if (yacConfig.wallet && yacConfig.wallet.type === 'js') {
-    const mnemonic = await secretManager.getMnemonic('YAC')
+  // Create Chain provider
+  const chainProvider = new YacoinEsploraApiProvider({
+    batchUrl: chainifyNetwork.yacoinEsploraApis,
+    url: chainifyNetwork.yacoinEsploraApis,
+    network: chainifyNetwork,
+    numberOfBlockConfirmation: yacConfig.feeNumberOfBlocks
+  })
 
-    yacClient.addProvider(
-      new YacoinEsploraApiProvider({
-        url: yacConfig.api.esploraUrl,
-        network: network,
-        numberOfBlockConfirmation: yacConfig.feeNumberOfBlocks
-      })
-    )
-
-    yacClient.addProvider(
-      new YacoinJsWalletProvider({
-        network: network,
-        mnemonic,
-        baseDerivationPath: `m/84'/${network.coinType}'/0'`
-      })
-    )
+  if (isMainnet) {
+    const feeProvider = new YacoinFeeApiProvider(chainifyNetwork.feeProviderUrl)
+    chainProvider.setFeeProvider(feeProvider)
   }
 
-  // CURRENTLY, HAVEN'T SUPPORTED TO USE COINS FROM YACOIND
-  // else {
-  //   yacClient.addProvider(
-  //     new BitcoinRpcProvider({
-  //       uri: yacConfig.rpc.url,
-  //       username: yacConfig.rpc.username,
-  //       password: yacConfig.rpc.password,
-  //       network: network,
-  //       feeBlockConfirmations: yacConfig.feeNumberOfBlocks
-  //     })
-  //   )
-  //   yacClient.addProvider(
-  //     new BitcoinNodeWalletProvider({
-  //       network: network,
-  //       uri: yacConfig.rpc.url,
-  //       username: yacConfig.rpc.username,
-  //       password: yacConfig.rpc.password,
-  //       addressType: yacConfig.addressType
-  //     })
-  //   )
-  // }
+  // Create swap provider
+  const swapProvider = new YacoinSwapEsploraProvider({
+    network: chainifyNetwork,
+    scraperUrl: chainifyNetwork.yacoinEsploraSwapApis
+  })
 
-  yacClient.addProvider(
-    new YacoinSwapProvider({
-      network: network,
-      mode: yacConfig.swapMode
-    })
-  )
-
-  if (yacConfig.wallet && yacConfig.wallet.type === 'js') {
-    // Override swap finding with esplora
-    yacClient.addProvider(new YacoinEsploraSwapFindProvider(yacConfig.api.esploraSwapUrl))
+  // Create wallet provider
+  const walletOptions = {
+    network: chainifyNetwork,
+    baseDerivationPath: derivationPath,
+    mnemonic
   }
+  const walletProvider = new YacoinHDWalletProvider(walletOptions, chainProvider)
+  swapProvider.setWallet(walletProvider)
+  const client = new Client().connect(swapProvider)
 
-  yacClient.addProvider(new YacoinFeeApiProvider('https://liquality.io/swap/mempool/v1/fees/recommended'))
+  // Create nft provider
+  const nftProvider = new YacoinNftProvider(walletProvider)
+  client.connect(nftProvider)
 
-  return yacClient
+  return client
 }
 
-async function createEthClient(asset) {
-  const assetData = assets[asset]
-  const assetConfig = config.assets[asset]
-  let network = EthereumNetworks[assetConfig.network]
-  if (network.name === 'local') {
-    network = {
-      ...network,
-      name: 'mainnet',
-      chainId: 1337,
-      networkId: 1337,
-      local: true
-    }
+// --- BEGIN CREATE EVM CLIENT ---
+function getFeeProvider(chain, provider) {
+  if (chain.EIP1559) {
+    return new EIP1559FeeProvider(provider)
+  } else {
+    return new RpcFeeProvider(provider, chain.feeMultiplier)
   }
+}
 
-  const ethClient = new Client()
+function getEvmProvider(chain, chainifyNetwork) {
+  const network = chainifyNetwork
+  if (chain.isMultiLayered) {
+    const provider = asL2Provider(new StaticJsonRpcProvider(network.rpcUrl, chain.network.chainId))
+    return new OptimismChainProvider(
+      {
+        ...chainifyNetwork,
+        chainId: chain.network.chainId
+      },
+      provider,
+      chain.feeMultiplier
+    )
+  } else {
+    const provider = new StaticJsonRpcProvider(network.rpcUrl, chain.network.chainId)
+    const feeProvider = getFeeProvider(chain, provider)
+    return new EvmChainProvider(chain.network, provider, feeProvider, chain.multicallSupport)
+  }
+}
+
+async function createEvmClient(asset, chain, chainifyNetwork, derivationPath) {
   const mnemonic = await secretManager.getMnemonic(asset)
 
-  ethClient.addProvider(
-    new EthereumRpcProvider({
-      uri: assetConfig.rpc.url
-    })
-  )
+  // Get EVM Chain Provider
+  const chainProvider = getEvmProvider(chain, chainifyNetwork)
 
-  let feeProvider
-  let eip1559 = false
+  // Get EVM Wallet Provider
+  const walletOptions = { derivationPath, mnemonic }
+  const walletProvider = new EvmWalletProvider(walletOptions, chainProvider)
 
-  if (!network.local && (assetData.chain === 'ethereum' || (assetData.chain === 'polygon' && network.isTestnet))) {
-    eip1559 = true
-    feeProvider = new EthereumEIP1559FeeProvider({ uri: assetConfig.rpc.url })
-  } else {
-    feeProvider = new EthereumRpcFeeProvider()
-  }
+  // Add EVM swap provider
+  const swapProvider = new EvmSwapProvider({
+    // contractAddress: undefined, // TODO Deploy a specialized contract address used for atomic swap
+    scraperUrl: chainifyNetwork.scraperUrl
+  })
+  swapProvider.setWallet(walletProvider)
+  const client = new Client().connect(swapProvider)
 
-  ethClient.addProvider(feeProvider)
+  // NO NEED SUPPORT NFT AT THE MOMENT
+  // if (chain.nftProviderType) {
+  //   const nftProvider = getNftProvider(chain.nftProviderType, walletProvider, chainifyNetwork.isTestnet)
+  //   client.connect(nftProvider)
+  // }
 
-  ethClient.addProvider(
-    new EthereumJsWalletProvider({
-      network,
-      mnemonic,
-      derivationPath: `m/44'/${network.coinType}'/0'/0/0`,
-      hardfork: eip1559 ? 'london' : undefined
-    })
-  )
-
-  if (assetData.type === 'erc20') {
-    const contractAddress = assetConfig.contractAddress
-    ethClient.addProvider(new EthereumErc20Provider(contractAddress))
-    ethClient.addProvider(new EthereumErc20SwapProvider())
-    ethClient.addProvider(new EthereumErc20ScraperSwapFindProvider(assetConfig.scraper.url))
-  } else {
-    ethClient.addProvider(new EthereumSwapProvider())
-    ethClient.addProvider(new EthereumScraperSwapFindProvider(assetConfig.scraper.url))
-  }
-
-  return ethClient
+  return client
 }
+// --- END CREATE EVM CLIENT ---
 
-async function createNearClient() {
-  const nearConfig = config.assets.NEAR
-  const defaultConfig = NearNetworks[nearConfig.network]
-  const network = {
-    ...defaultConfig,
-    nodeUrl: nearConfig.rpc?.url || defaultConfig.nodeUrl
-  }
+// async function createEthClient(asset) {
+//   const assetData = assets[asset]
+//   const assetConfig = config.assets[asset]
+//   let network = EthereumNetworks[assetConfig.network]
+//   if (network.name === 'local') {
+//     network = {
+//       ...network,
+//       name: 'mainnet',
+//       chainId: 1337,
+//       networkId: 1337,
+//       local: true
+//     }
+//   }
 
-  const nearClient = new Client()
+//   const ethClient = new Client()
+//   const mnemonic = await secretManager.getMnemonic(asset)
+
+//   ethClient.addProvider(
+//     new EthereumRpcProvider({
+//       uri: assetConfig.rpc.url
+//     })
+//   )
+
+//   let feeProvider
+//   let eip1559 = false
+
+//   if (!network.local && (assetData.chain === 'ethereum' || (assetData.chain === 'polygon' && network.isTestnet))) {
+//     eip1559 = true
+//     feeProvider = new EthereumEIP1559FeeProvider({ uri: assetConfig.rpc.url })
+//   } else {
+//     feeProvider = new EthereumRpcFeeProvider()
+//   }
+
+//   ethClient.addProvider(feeProvider)
+
+//   ethClient.addProvider(
+//     new EthereumJsWalletProvider({
+//       network,
+//       mnemonic,
+//       derivationPath: `m/44'/${network.coinType}'/0'/0/0`,
+//       hardfork: eip1559 ? 'london' : undefined
+//     })
+//   )
+
+//   if (assetData.type === 'erc20') {
+//     const contractAddress = assetConfig.contractAddress
+//     ethClient.addProvider(new EthereumErc20Provider(contractAddress))
+//     ethClient.addProvider(new EthereumErc20SwapProvider())
+//     ethClient.addProvider(new EthereumErc20ScraperSwapFindProvider(assetConfig.scraper.url))
+//   } else {
+//     ethClient.addProvider(new EthereumSwapProvider())
+//     ethClient.addProvider(new EthereumScraperSwapFindProvider(assetConfig.scraper.url))
+//   }
+
+//   return ethClient
+// }
+
+async function createNearClient(chainifyNetwork, derivationPath) {
   const mnemonic = await secretManager.getMnemonic('NEAR')
-  if (nearConfig.wallet && nearConfig.wallet.type === 'js') {
-    nearClient.addProvider(
-      new NearJsWalletProvider({
-        network,
-        mnemonic,
-        derivationPath: `m/44'/${network.coinType}'/0'`
-      })
-    )
+
+  const walletOptions = {
+    mnemonic,
+    derivationPath: derivationPath,
+    helperUrl: chainifyNetwork.helperUrl
   }
-
-  nearClient.addProvider(new NearRpcProvider(network))
-  nearClient.addProvider(new NearSwapProvider())
-  nearClient.addProvider(new NearSwapFindProvider(network.helperUrl))
-
-  return nearClient
+  const chainProvider = new NearChainProvider(chainifyNetwork)
+  const walletProvider = new NearWalletProvider(walletOptions, chainProvider)
+  const swapProvider = new NearSwapProvider(chainifyNetwork.helperUrl, walletProvider)
+  return new Client(chainProvider, walletProvider).connect(swapProvider)
 }
 
-async function createSolClient() {
-  const solanaConfig = config.assets.SOL
-  const defaultConfig = SolanaNetworks[solanaConfig.network]
-  const solanaNetwork = {
-    ...defaultConfig,
-    nodeUrl: solanaConfig.rpc?.url || defaultConfig.nodeUrl
-  }
-
-  const solanaClient = new Client()
+async function createSolClient(chainifyNetwork, derivationPath) {
   const mnemonic = await secretManager.getMnemonic('SOL')
-  const derivationPath = `m/44'/501'/${solanaNetwork.walletIndex}'/0'`
-  solanaClient.addProvider(new SolanaRpcProvider(solanaNetwork))
-  solanaClient.addProvider(
-    new SolanaWalletProvider({
-      network: solanaNetwork,
-      mnemonic,
-      derivationPath
-    })
-  )
-  solanaClient.addProvider(new SolanaSwapProvider(solanaNetwork))
-  solanaClient.addProvider(new SolanaSwapFindProvider(solanaNetwork))
 
-  return solanaClient
-}
+  const walletOptions = { mnemonic, derivationPath: derivationPath }
+  const chainProvider = new SolanaChainProvider(chainifyNetwork)
+  const walletProvider = new SolanaWalletProvider(walletOptions, chainProvider)
+  const nftProvider = new SolanaNftProvider(walletProvider)
 
-async function createTerraClient(asset) {
-  const terraConfig = config.assets[asset]
-  const defaultConfig = TerraNetworks[terraConfig.network]
-  const terraNetwork = {
-    ...defaultConfig,
-    nodeUrl: terraConfig.rpc?.url || defaultConfig.nodeUrl
-  }
-
-  const terraClient = new Client()
-  const mnemonic = await secretManager.getMnemonic('LUNA')
-
-  terraClient.addProvider(new TerraRpcProvider(terraNetwork, terraConfig.asset, terraConfig.feeAsset))
-  terraClient.addProvider(
-    new TerraWalletProvider({
-      network: terraNetwork,
-      mnemonic,
-      baseDerivationPath: `'m/44'/${terraNetwork.coinType}'/0'`,
-      asset: terraConfig.asset,
-      feeAsset: terraConfig.feeAsset,
-      stableFee: false
-    })
-  )
-  terraClient.addProvider(new TerraSwapProvider(terraNetwork, terraConfig.asset))
-  terraClient.addProvider(new TerraSwapFindProvider(terraNetwork, terraConfig.asset))
-
-  return terraClient
+  return new Client(chainProvider, walletProvider).connect(nftProvider)
 }
 
 const clients = {}
 
 async function createClient(asset) {
-  const assetData = assets[asset]
+  const chain = getAssetChain(asset)
+  const { network, id: chainId } = chain
+  const { name, coinType, isTestnet, rpcUrls } = network
+  const chainNetwork = ChainNetworks[chainId] ? ChainNetworks[chainId][config.application.network] : {} || {}
+  let chainifyNetwork = {
+    name,
+    coinType,
+    isTestnet,
+    chainId,
+    rpcUrl: rpcUrls && rpcUrls.length > 0 ? rpcUrls[0] : undefined,
+    ...chainNetwork,
+    custom: false
+  }
+  const derivationPath = getDerivationPath(chainId, config.application.network, 0, 'default')
 
-  if (assetData.chain === 'bitcoin') return createBtcClient()
-  if (assetData.chain === 'yacoin') return createYacClient()
-  if (assetData.chain === 'rsk') return createEthClient(asset)
-  if (assetData.chain === 'bsc') return createEthClient(asset)
-  if (assetData.chain === 'polygon') return createEthClient(asset)
-  if (assetData.chain === 'avalanche') return createEthClient(asset)
-  if (assetData.chain === 'arbitrum') return createEthClient(asset)
-  if (assetData.chain === 'ethereum') return createEthClient(asset)
-  if (assetData.chain === 'near') return createNearClient()
-  if (assetData.chain === 'solana') return createSolClient()
-  if (assetData.chain === 'terra') return createTerraClient(asset)
+  let client
+  if (chain.isEVM) {
+    const evmConfig = config.assets[asset]
+    chainifyNetwork = {
+      ...chainifyNetwork,
+      scraperUrl: evmConfig.scraper.url,
+      rpcUrl: evmConfig.rpc.url
+    }
+    client = createEvmClient(asset, chain, chainifyNetwork, derivationPath)
+  } else {
+    switch (chainId) {
+      case ChainId.Bitcoin:
+        chainifyNetwork = {
+          ...chainifyNetwork,
+          scraperUrl: config.assets.BTC.api.url,
+          batchScraperUrl: config.assets.BTC.batchApi.url,
+          feeProviderUrl: 'https://liquality.io/swap/mempool/v1/fees/recommended'
+        }
+        client = createBtcClient(chainifyNetwork, derivationPath)
+        break
+      case ChainId.Yacoin:
+        chainifyNetwork = {
+          ...chainifyNetwork,
+          yacoinEsploraApis: config.assets.YAC.api.esploraUrl,
+          yacoinEsploraSwapApis: config.assets.YAC.api.esploraSwapUrl,
+          feeProviderUrl: 'https://liquality.io/swap/mempool/v1/fees/recommended'
+        }
+        client = createYacClient(chainifyNetwork, derivationPath)
+        break
+      case ChainId.Near:
+        client = createNearClient(chainifyNetwork, derivationPath)
+        break
+      case ChainId.Solana:
+        client = createSolClient(chainifyNetwork, derivationPath)
+        break
+      default:
+        throw new Error(`Could not create client for asset ${asset}`)
+    }
+  }
 
-  throw new Error(`Could not create client for asset ${asset}`)
+  return client
 }
 
 async function getClient(asset) {

@@ -2,7 +2,7 @@ const debug = require('debug')('liquality:agent:coingecko')
 const _ = require('lodash')
 const axios = require('axios')
 const BN = require('bignumber.js')
-const { assets } = require('@yaswap/cryptoassets')
+const { getAssetInfo, getAllAssetsInfo } = require('./asset')
 
 class CoinGecko {
   constructor(url = 'https://api.coingecko.com/api/v3') {
@@ -19,8 +19,9 @@ class CoinGecko {
       `/simple/price?ids=${formattedCoinIds}&vs_currencies=${formattedVsCurrencies}`
     )
     // Normalize to agent casing
+    const allAssetInfo = getAllAssetsInfo()
     let formattedData = _.mapKeys(data, (v, coinGeckoId) =>
-      _.findKey(assets, (asset) => asset.coinGeckoId === coinGeckoId)
+      _.findKey(allAssetInfo, (asset) => asset.priceSource?.coinGeckoId === coinGeckoId)
     )
     formattedData = _.mapValues(formattedData, (rates) => _.mapKeys(rates, (v, k) => k.toUpperCase()))
     return formattedData
@@ -39,12 +40,12 @@ class CoinGecko {
       }
     })
 
-    const coinIds = [...all].map((currency) => assets[currency].coinGeckoId)
+    const coinIds = [...all].map((currency) => getAssetInfo(currency).priceSource?.coinGeckoId)
     const rates = await this.getPrices(coinIds, ['USD', ...all])
 
     for (const symbol of [...all]) {
-      if (!rates[symbol] && assets[symbol].matchingAsset) {
-        rates[symbol] = rates[assets[symbol].matchingAsset]
+      if (!rates[symbol] && getAssetInfo(symbol).matchingAsset) {
+        rates[symbol] = rates[getAssetInfo(symbol).matchingAsset]
       }
     }
 

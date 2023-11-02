@@ -2,8 +2,7 @@ const debug = require('debug')('liquality:agent:chain-lock')
 
 const EventEmitter = require('events')
 const _ = require('lodash')
-const { assets } = require('@yaswap/cryptoassets')
-
+const { getAssetInfo } = require('./asset')
 const { RescheduleError } = require('./errors')
 
 let counter = 0
@@ -29,7 +28,7 @@ const RETRY_ON = [
 ]
 
 const attemptToLockChain = (asset) => {
-  const chain = assets[asset].chain
+  const chain = getAssetInfo(asset).chain
 
   if (CHAIN_LOCK[chain]) {
     return {

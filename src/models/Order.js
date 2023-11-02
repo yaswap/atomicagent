@@ -1,11 +1,11 @@
 const mongoose = require('mongoose')
 const { omitBy } = require('lodash')
 const { v4: uuidv4 } = require('uuid')
-const { assets, chains } = require('@yaswap/cryptoassets')
 const config = require('../config')
 const AuditLog = require('./AuditLog')
 const MarketHistory = require('./MarketHistory')
 
+const { getAssetInfo, getChainifyAsset, getNativeAsset, getAssetChain } = require('../utils/asset')
 const { getClient } = require('../utils/clients')
 const { withRetry } = require('../utils/chainLock')
 const { formatTxHash } = require('../utils/hash')
@@ -288,8 +288,8 @@ OrderSchema.methods.setUsdRates = async function () {
   this.fromRateUsd = fromRateUsd
   this.toRateUsd = toRateUsd
 
-  const fromChainNativeAsset = chains[assets[this.from].chain].nativeAsset
-  const toChainNativeAsset = chains[assets[this.to].chain].nativeAsset
+  const fromChainNativeAsset = getNativeAsset(this.from)
+  const toChainNativeAsset = getNativeAsset(this.to)
 
   if (fromChainNativeAsset !== this.from) {
     this.fromSecondaryRateUsd = await MarketHistory.getMostRecentRate(`${fromChainNativeAsset}-USD`)
@@ -383,9 +383,9 @@ OrderSchema.methods.addTx = function (type, tx) {
     txMapItemValue.feeAmount = tx.fee
     txMapItemValue.feePrice = tx.feePrice
 
-    const { type, chain } = assets[asset]
+    const type = getAssetInfo(asset).type
     const key = type === 'erc20' ? 'Secondary' : ''
-    const nativeAsset = chains[chain].nativeAsset
+    const nativeAsset = getNativeAsset(asset)
     txMapItemValue.feeAmountUsd = calculateFeeUsdAmount(nativeAsset, tx.fee, this[`${side}${key}RateUsd`]) || 0
   }
 
@@ -415,12 +415,14 @@ OrderSchema.methods.addTx = function (type, tx) {
 OrderSchema.methods.claimSwap = async function () {
   const fromClient = await this.fromClient()
   const { defaultFee } = config.assets[this.from]
+  const asset = getChainifyAsset(this.from)
 
   return withRetry(this.from, async () => {
     const fees = await fromClient.chain.getFees()
 
     return fromClient.swap.claimSwap(
       {
+        asset,
         value: BN(this.fromAmount),
         recipientAddress: this.fromCounterPartyAddress,
         refundAddress: this.fromAddress,
@@ -437,12 +439,14 @@ OrderSchema.methods.claimSwap = async function () {
 OrderSchema.methods.refundSwap = async function () {
   const toClient = await this.toClient()
   const { defaultFee } = config.assets[this.to]
+  const asset = getChainifyAsset(this.to)
 
   return withRetry(this.to, async () => {
     const fees = await toClient.chain.getFees()
 
     return toClient.swap.refundSwap(
       {
+        asset,
         value: BN(this.toAmount),
         recipientAddress: this.toAddress,
         refundAddress: this.toCounterPartyAddress,
@@ -458,12 +462,14 @@ OrderSchema.methods.refundSwap = async function () {
 OrderSchema.methods.initiateSwap = async function () {
   const toClient = await this.toClient()
   const { defaultFee } = config.assets[this.to]
+  const asset = getChainifyAsset(this.to)
 
   return withRetry(this.to, async () => {
     const fees = await toClient.chain.getFees()
 
     return toClient.swap.initiateSwap(
       {
+        asset,
         value: BN(this.toAmount),
         recipientAddress: this.toAddress,
         refundAddress: this.toCounterPartyAddress,
@@ -478,12 +484,14 @@ OrderSchema.methods.initiateSwap = async function () {
 OrderSchema.methods.fundSwap = async function () {
   const toClient = await this.toClient()
   const { defaultFee } = config.assets[this.to]
+  const asset = getChainifyAsset(this.to)
 
   return withRetry(this.to, async () => {
     const fees = await toClient.chain.getFees()
 
     return toClient.swap.fundSwap(
       {
+        asset,
         value: BN(this.toAmount),
         recipientAddress: this.toAddress,
         refundAddress: this.toCounterPartyAddress,
@@ -498,10 +506,12 @@ OrderSchema.methods.fundSwap = async function () {
 
 OrderSchema.methods.verifyInitiateSwapTransaction = async function () {
   const fromClient = await this.fromClient()
+  const asset = getChainifyAsset(this.from)
 
   return withRetry(this.from, async () => {
     const verified = await fromClient.swap.verifyInitiateSwapTransaction(
       {
+        asset,
         value: BN(this.fromAmount),
         recipientAddress: this.fromCounterPartyAddress,
         refundAddress: this.fromAddress,
@@ -519,10 +529,12 @@ OrderSchema.methods.verifyInitiateSwapTransaction = async function () {
 
 OrderSchema.methods.findFromFundSwapTransaction = async function () {
   const fromClient = await this.fromClient()
+  const asset = getChainifyAsset(this.from)
 
   return withRetry(this.from, async () => {
     return fromClient.swap.findFundSwapTransaction(
       {
+        asset,
         value: BN(this.fromAmount),
         recipientAddress: this.fromCounterPartyAddress,
         refundAddress: this.fromAddress,
@@ -536,10 +548,12 @@ OrderSchema.methods.findFromFundSwapTransaction = async function () {
 
 OrderSchema.methods.findToFundSwapTransaction = async function () {
   const toClient = await this.toClient()
+  const asset = getChainifyAsset(this.to)
 
   return withRetry(this.to, async () => {
     return toClient.swap.findFundSwapTransaction(
       {
+        asset,
         value: BN(this.toAmount),
         recipientAddress: this.toAddress,
         refundAddress: this.toCounterPartyAddress,
@@ -553,6 +567,7 @@ OrderSchema.methods.findToFundSwapTransaction = async function () {
 
 OrderSchema.methods.findToClaimSwapTransaction = async function (toLastScannedBlock, toCurrentBlockNumber) {
   const toClient = await this.toClient()
+  const asset = getChainifyAsset(this.to)
 
   if (!toCurrentBlockNumber) {
     toCurrentBlockNumber = await toClient.chain.getBlockHeight()
@@ -564,6 +579,7 @@ OrderSchema.methods.findToClaimSwapTransaction = async function (toLastScannedBl
       return withRetry(this.to, async () => {
         return toClient.swap.findClaimSwapTransaction(
           {
+            asset,
             value: BN(this.toAmount),
             recipientAddress: this.toAddress,
             refundAddress: this.toCounterPartyAddress,
@@ -609,7 +625,7 @@ OrderSchema.static('fromMarket', function (market, fromAmount) {
 function formatHash(hash, asset) {
   // when querying documents, to/from are not set
   if (!asset) return hash
-  return chains[assets[asset].chain].formatTransactionHash(hash)
+  return getAssetChain(asset).formatTransactionHash(hash)
 }
 
 const Order = mongoose.model('Order', OrderSchema)

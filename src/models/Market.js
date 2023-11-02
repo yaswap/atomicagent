@@ -3,13 +3,13 @@ const mongoose = require('mongoose')
 
 const Bluebird = require('bluebird')
 const BN = require('bignumber.js')
-const { assets: ASSETS, chains, unitToCurrency } = require('@yaswap/cryptoassets')
-
 const Asset = require('./Asset')
 const MarketHistory = require('./MarketHistory')
 
+const { formatAddress, convertUnitsToCurrency, getChainifyAsset } = require('../utils/asset')
 const fx = require('../utils/fx')
 const { getClient } = require('../utils/clients')
+
 const config = require('../config')
 const coingecko = require('../utils/coinGeckoClient')
 const yacoinExplorer = require('../utils/yacoinExplorerClient')
@@ -112,16 +112,20 @@ MarketSchema.static('updateAllMarketData', async function () {
       try {
         const client = await asset.getClient()
         const addresses = await client.wallet.getUsedAddresses()
-        asset.balance = addresses.length === 0 ? 0 : await client.chain.getBalance(addresses)
+
+        const _assets = getChainifyAsset(asset.code)
+        debug('TACA ===> ', asset.code, ', address = ', addresses, ', _assets = ', _assets)
+        asset.balance = addresses.length === 0 ? 0 : (await client.chain.getBalance(addresses, [_assets]))[0].toNumber()
+        debug('TACA ===> ', asset.code, ', balance = ', asset.balance)
 
         try {
           const address = (await client.wallet.getUnusedAddress()).address
-          asset.address = chains[ASSETS[asset.code].chain].formatAddress(address)
+          asset.address = formatAddress(asset.code, address)
         } catch (e) {
           // ignore if this snippet fails
         }
 
-        debug('Balance', unitToCurrency(ASSETS[asset.code], asset.balance).toString(), asset.code)
+        debug('Balance', convertUnitsToCurrency(asset.code, asset.balance).toString(), asset.code)
 
         // force update timestamp, if balance doesn't change for an asset
         asset.updatedAt = new Date()

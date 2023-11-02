@@ -12,6 +12,7 @@ queuePasswordRW = "secretRWTest123"
 quoteExpirationInSeconds = 43200
 nodeSwapExpirationDurationInSeconds = 43200
 swapExpirationDurationInSeconds = 86400
+network = "testnet"
 
 [auth]
 cookieSecret = '58da74ef560e5578cb46219b7818d7c2'
@@ -38,7 +39,6 @@ killswitch = 'pm2 stop "Worker"'
   blockTimeInSeconds = 5
   defaultFee = "average"
     [assets.BTC.wallet]
-    type = "js"
     mnemonic = "salad wreck holiday immune example derive cause scene swim you title march"
     [assets.BTC.api]
     url = "https://electrs-testnet-api.liq-chainhub.net/"
@@ -51,7 +51,6 @@ killswitch = 'pm2 stop "Worker"'
   blockTimeInSeconds = 5
   defaultFee = "average"
     [assets.YAC.wallet]
-    type = "js"
     mnemonic = "salad wreck holiday immune example derive cause scene swim you title march"
     [assets.YAC.api]
     esploraUrl = "http://localhost:3001/api"
@@ -62,7 +61,6 @@ killswitch = 'pm2 stop "Worker"'
   blockTimeInSeconds = 5
   defaultFee = "average"
     [assets.ETH.wallet]
-    type = "js"
     mnemonic = "salad wreck holiday immune example derive cause scene swim you title march"
     [assets.ETH.scraper]
     url = "http://localhost:8080"
@@ -76,7 +74,6 @@ killswitch = 'pm2 stop "Worker"'
   contractAddress = "0x11fE4B6AE13d2a6055C8D9cF65c55bac32B5d844"
   defaultFee = "average"
     [assets.DAI.wallet]
-    type = "js"
     mnemonic = "salad wreck holiday immune example derive cause scene swim you title march"
     [assets.DAI.scraper]
     url = "http://localhost:8080"

@@ -3,7 +3,7 @@ const fs = require('fs').promises
 const path = require('path')
 const Queue = require('bull')
 const Redis = require('ioredis')
-const { assets } = require('@yaswap/cryptoassets')
+const { getAssetInfo } = require('../utils/asset')
 const { v4: uuidv4 } = require('uuid')
 
 const config = require('../config')
@@ -118,7 +118,7 @@ const addUniqueJob = (q, name, data = {}, opts = {}) => {
   }
 
   if (data.asset) {
-    data.groupBy = assets[data.asset].chain
+    data.groupBy = getAssetInfo(data.asset).chain
   }
 
   const arr = [name, data, newOpts]

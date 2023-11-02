@@ -3,7 +3,7 @@
 const program = require('commander')
 const { addCommonOptions } = require('./common')
 const { getClient } = require('../src/utils/clients')
-const { assets, unitToCurrency, currencyToUnit } = require('@yaswap/cryptoassets')
+const { getAssetInfo, getAssetChain, getChainifyAsset, convertUnitsToCurrency, convertCurrencyToUnits } = require('../src/utils/asset')
 const config = require('../src/config')
 
 addCommonOptions(program)
@@ -11,9 +11,12 @@ addCommonOptions(program)
 async function printBalance(asset) {
   const client = await getClient(asset)
   const addresses = await client.wallet.getUsedAddresses()
-  const balance = addresses.length === 0 ? 0 : await client.chain.getBalance(addresses)
-  const balanceInCurrency = unitToCurrency(assets[asset], balance).toNumber()
-  const code = assets[asset].code
+
+  const _assets = getChainifyAsset(asset)
+  const balance = addresses.length === 0 ? 0 : (await client.chain.getBalance(addresses, [_assets]))[0].toNumber()
+
+  const balanceInCurrency = convertUnitsToCurrency(asset, balance).toNumber()
+  const code = getAssetInfo(asset).code
 
   console.log(balanceInCurrency + ' ' + code)
 }
@@ -38,9 +41,12 @@ program.command('getnewaddress <asset>').action(async (asset) => {
 })
 
 program.command('sendtoaddress <asset> <address> <amount>').action(async (asset, address, amount) => {
-  const amountInUnit = currencyToUnit(assets[asset], amount)
+  const amountInUnit = convertCurrencyToUnits(asset, amount)
   const client = await getClient(asset)
-  const tx = await client.chain.sendTransaction({ to: address, value: amountInUnit })
+  const tx = await client.chain.sendTransaction({
+    to: getAssetChain(asset).formatAddress(address),
+    value: amountInUnit
+  })
 
   console.log(tx)
 })

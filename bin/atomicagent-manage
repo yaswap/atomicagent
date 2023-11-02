@@ -4,7 +4,7 @@ const program = require('commander')
 const Bluebird = require('bluebird')
 
 const { addCommonOptions } = require('./common')
-const { assets, currencyToUnit } = require('@yaswap/cryptoassets')
+const { convertCurrencyToUnits } = require('../src/utils/asset')
 const mongo = require('../src/utils/mongo')
 const config = require('../src/config')
 
@@ -28,8 +28,8 @@ program
 
     const asset = new Asset({
       code,
-      min: currencyToUnit(assets[code], min),
-      max: currencyToUnit(assets[code], max),
+      min: convertCurrencyToUnits(code, min),
+      max: convertCurrencyToUnits(code, max),
       minConf,
       '24hrUsdLimit': dailyUsdLimit
     })
@@ -57,7 +57,7 @@ program.command('asset:set <code> <key> <value>').action(async (code, key, value
         throw new Error(`Invalid value: "${value}"`)
       }
 
-      asset[key] = currencyToUnit(assets[code], value)
+      asset[key] = convertCurrencyToUnits(code, value)
       break
     }
     case 'minConf': {
@@ -72,7 +72,7 @@ program.command('asset:set <code> <key> <value>').action(async (code, key, value
       if (!Number(value)) {
         asset[key] = null
       } else {
-        asset[key] = currencyToUnit(assets[code], value)
+        asset[key] = convertCurrencyToUnits(code, value)
       }
       break
     }
