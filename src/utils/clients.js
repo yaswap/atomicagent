@@ -22,13 +22,12 @@ const {
   YacoinNftProvider
 } = require('@yaswap/yacoin')
 
-// const {
-//   LitecoinEsploraApiProvider,
-//   LitecoinFeeApiProvider,
-//   LitecoinHDWalletProvider,
-//   LitecoinSwapEsploraProvider,
-//   LitecoinTypes,
-// } = require('@yaswap/litecoin');
+const {
+  LitecoinEsploraApiProvider,
+  LitecoinFeeApiProvider,
+  LitecoinHDWalletProvider,
+  LitecoinSwapEsploraProvider,
+} = require('@yaswap/litecoin')
 
 const {
   EIP1559FeeProvider,
@@ -40,16 +39,6 @@ const {
 } = require('@yaswap/evm')
 const { StaticJsonRpcProvider } = require('@ethersproject/providers')
 const { asL2Provider } = require('@eth-optimism/sdk')
-// const { EthereumRpcProvider } = require('@yaswap/ethereum-rpc-provider')
-// const { EthereumJsWalletProvider } = require('@yaswap/ethereum-js-wallet-provider')
-// const { EthereumSwapProvider } = require('@yaswap/ethereum-swap-provider')
-// const { EthereumErc20Provider } = require('@yaswap/ethereum-erc20-provider')
-// const { EthereumErc20SwapProvider } = require('@yaswap/ethereum-erc20-swap-provider')
-// const { EthereumNetworks } = require('@yaswap/ethereum-networks')
-// const { EthereumScraperSwapFindProvider } = require('@yaswap/ethereum-scraper-swap-find-provider')
-// const { EthereumErc20ScraperSwapFindProvider } = require('@yaswap/ethereum-erc20-scraper-swap-find-provider')
-// const { EthereumEIP1559FeeProvider } = require('@yaswap/ethereum-eip1559-fee-provider')
-// const { EthereumRpcFeeProvider } = require('@yaswap/ethereum-rpc-fee-provider')
 
 const { NearChainProvider, NearSwapProvider, NearWalletProvider } = require('@yaswap/near')
 const { SolanaChainProvider, SolanaNftProvider, SolanaWalletProvider } = require('@yaswap/solana')
@@ -87,6 +76,44 @@ async function createBtcClient(chainifyNetwork, derivationPath) {
   }
 
   const walletProvider = new BitcoinHDWalletProvider(walletOptions, chainProvider)
+  swapProvider.setWallet(walletProvider)
+
+  return new Client().connect(swapProvider)
+}
+
+async function createLtcClient(chainifyNetwork, derivationPath) {
+  const ltcConfig = config.assets.LTC
+  const mnemonic = await secretManager.getMnemonic('LTC')
+  const isMainnet = !chainifyNetwork.isTestnet
+
+  // Create Chain provider
+  const chainProvider = new LitecoinEsploraApiProvider({
+    batchUrl: chainifyNetwork.batchScraperUrl,
+    url: chainifyNetwork.scraperUrl,
+    network: chainifyNetwork,
+    numberOfBlockConfirmation: ltcConfig.feeNumberOfBlocks
+  })
+
+  if (isMainnet) {
+    const feeProvider = new LitecoinFeeApiProvider(chainifyNetwork.feeProviderUrl)
+    chainProvider.setFeeProvider(feeProvider)
+  }
+
+  // Create swap provider
+  const swapProvider = new LitecoinSwapEsploraProvider({
+    network: chainifyNetwork,
+    scraperUrl: chainifyNetwork.scraperUrl,
+    mode: ltcConfig.swapMode
+  })
+
+  // Create wallet provider
+  const walletOptions = {
+    network: chainifyNetwork,
+    baseDerivationPath: derivationPath,
+    mnemonic
+  }
+
+  const walletProvider = new LitecoinHDWalletProvider(walletOptions, chainProvider)
   swapProvider.setWallet(walletProvider)
 
   return new Client().connect(swapProvider)
@@ -189,63 +216,6 @@ async function createEvmClient(asset, chain, chainifyNetwork, derivationPath) {
 }
 // --- END CREATE EVM CLIENT ---
 
-// async function createEthClient(asset) {
-//   const assetData = assets[asset]
-//   const assetConfig = config.assets[asset]
-//   let network = EthereumNetworks[assetConfig.network]
-//   if (network.name === 'local') {
-//     network = {
-//       ...network,
-//       name: 'mainnet',
-//       chainId: 1337,
-//       networkId: 1337,
-//       local: true
-//     }
-//   }
-
-//   const ethClient = new Client()
-//   const mnemonic = await secretManager.getMnemonic(asset)
-
-//   ethClient.addProvider(
-//     new EthereumRpcProvider({
-//       uri: assetConfig.rpc.url
-//     })
-//   )
-
-//   let feeProvider
-//   let eip1559 = false
-
-//   if (!network.local && (assetData.chain === 'ethereum' || (assetData.chain === 'polygon' && network.isTestnet))) {
-//     eip1559 = true
-//     feeProvider = new EthereumEIP1559FeeProvider({ uri: assetConfig.rpc.url })
-//   } else {
-//     feeProvider = new EthereumRpcFeeProvider()
-//   }
-
-//   ethClient.addProvider(feeProvider)
-
-//   ethClient.addProvider(
-//     new EthereumJsWalletProvider({
-//       network,
-//       mnemonic,
-//       derivationPath: `m/44'/${network.coinType}'/0'/0/0`,
-//       hardfork: eip1559 ? 'london' : undefined
-//     })
-//   )
-
-//   if (assetData.type === 'erc20') {
-//     const contractAddress = assetConfig.contractAddress
-//     ethClient.addProvider(new EthereumErc20Provider(contractAddress))
-//     ethClient.addProvider(new EthereumErc20SwapProvider())
-//     ethClient.addProvider(new EthereumErc20ScraperSwapFindProvider(assetConfig.scraper.url))
-//   } else {
-//     ethClient.addProvider(new EthereumSwapProvider())
-//     ethClient.addProvider(new EthereumScraperSwapFindProvider(assetConfig.scraper.url))
-//   }
-
-//   return ethClient
-// }
-
 async function createNearClient(chainifyNetwork, derivationPath) {
   const mnemonic = await secretManager.getMnemonic('NEAR')
 
@@ -317,6 +287,15 @@ async function createClient(asset) {
           feeProviderUrl: 'https://liquality.io/swap/mempool/v1/fees/recommended'
         }
         client = createYacClient(chainifyNetwork, derivationPath)
+        break
+      case ChainId.Litecoin:
+        chainifyNetwork = {
+          ...chainifyNetwork,
+          scraperUrl: config.assets.LTC.api.url,
+          batchScraperUrl: config.assets.LTC.batchApi.url,
+          feeProviderUrl: 'https://litecoinspace.org/api/v1/fees/recommended'
+        }
+        client = createLtcClient(chainifyNetwork, derivationPath)
         break
       case ChainId.Near:
         client = createNearClient(chainifyNetwork, derivationPath)

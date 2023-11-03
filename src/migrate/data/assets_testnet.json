@@ -2,8 +2,15 @@
   {
     "code": "BTC",
     "balance": 0,
-    "min": 10000,
+    "min": 5000,
     "max": 50000000,
+    "minConf": 1
+  },
+  {
+    "code": "LTC",
+    "balance": 0,
+    "min": 1000000,
+    "max": 1000000000,
     "minConf": 1
   },
   {

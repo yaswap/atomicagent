@@ -56,6 +56,20 @@ killswitch = 'pm2 stop "Worker"'
     esploraUrl = "http://localhost:3001/api"
     esploraSwapUrl = "http://localhost:3001"
 
+  [assets.LTC]
+  network = "litecoin_testnet"
+  addressType = "bech32"
+  swapMode = "p2wsh"
+  feeNumberOfBlocks = 2
+  blockTimeInSeconds = 5
+  defaultFee = "average"
+    [assets.LTC.wallet]
+    mnemonic = "salad wreck holiday immune example derive cause scene swim you title march"
+    [assets.LTC.api]
+    url = "https://litecoinspace.org/api"
+    [assets.LTC.batchApi]
+    url = "https://litecoinspace.org/api"
+
   [assets.ETH]
   network="goerli"
   blockTimeInSeconds = 5

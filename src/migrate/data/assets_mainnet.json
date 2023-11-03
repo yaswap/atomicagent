@@ -7,6 +7,13 @@
     "minConf": 1
   },
   {
+    "code": "LTC",
+    "balance": 0,
+    "min": 1000000,
+    "max": 1000000000,
+    "minConf": 1
+  },
+  {
     "code": "ETH",
     "balance": 0,
     "min": 2000000000000000,

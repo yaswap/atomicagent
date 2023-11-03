@@ -46,5 +46,29 @@
     "to": "YAC",
     "spread": 0.01,
     "status": "ACTIVE"
+  },
+  {
+    "from": "LTC",
+    "to": "YAC",
+    "spread": 0.01,
+    "status": "ACTIVE"
+  },
+  {
+    "from": "YAC",
+    "to": "LTC",
+    "spread": 0.9,
+    "status": "ACTIVE"
+  },
+  {
+    "from": "BTC",
+    "to": "LTC",
+    "spread": 0.05,
+    "status": "ACTIVE"
+  },
+  {
+    "from": "LTC",
+    "to": "BTC",
+    "spread": 0.05,
+    "status": "ACTIVE"
   }
 ]
