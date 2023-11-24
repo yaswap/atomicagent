@@ -82,5 +82,41 @@
     "to": "BTC",
     "spread": 0,
     "status": "ACTIVE"
+  },
+  {
+    "from": "DOGE",
+    "to": "YAC",
+    "spread": 0,
+    "status": "ACTIVE"
+  },
+  {
+    "from": "YAC",
+    "to": "DOGE",
+    "spread": 0,
+    "status": "ACTIVE"
+  },
+  {
+    "from": "BTC",
+    "to": "DOGE",
+    "spread": 0,
+    "status": "ACTIVE"
+  },
+  {
+    "from": "DOGE",
+    "to": "BTC",
+    "spread": 0,
+    "status": "ACTIVE"
+  },
+  {
+    "from": "LTC",
+    "to": "DOGE",
+    "spread": 0,
+    "status": "ACTIVE"
+  },
+  {
+    "from": "DOGE",
+    "to": "LTC",
+    "spread": 0,
+    "status": "ACTIVE"
   }
 ]

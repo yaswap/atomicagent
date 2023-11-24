@@ -70,6 +70,18 @@ killswitch = 'pm2 stop "Worker"'
     [assets.LTC.batchApi]
     url = "https://litecoinspace.org/api"
 
+  [assets.DOGE]
+  network = "dogecoin_testnet"
+  feeNumberOfBlocks = 1
+  blockTimeInSeconds = 5
+  defaultFee = "average"
+    [assets.DOGE.wallet]
+    mnemonic = "salad wreck holiday immune example derive cause scene swim you title march"
+    [assets.DOGE.api]
+    url = "https://dogechain.info/api/v1"
+    [assets.DOGE.batchApi]
+    url = "https://dogechain.info/api/v1"
+
   [assets.ETH]
   network="goerli"
   blockTimeInSeconds = 5

@@ -26,8 +26,14 @@ const {
   LitecoinEsploraApiProvider,
   LitecoinFeeApiProvider,
   LitecoinHDWalletProvider,
-  LitecoinSwapEsploraProvider,
+  LitecoinSwapEsploraProvider
 } = require('@yaswap/litecoin')
+
+const {
+  DogecoinEsploraApiProvider,
+  DogecoinHDWalletProvider,
+  DogecoinSwapEsploraProvider
+} = require('@yaswap/dogecoin')
 
 const {
   EIP1559FeeProvider,
@@ -114,6 +120,37 @@ async function createLtcClient(chainifyNetwork, derivationPath) {
   }
 
   const walletProvider = new LitecoinHDWalletProvider(walletOptions, chainProvider)
+  swapProvider.setWallet(walletProvider)
+
+  return new Client().connect(swapProvider)
+}
+
+async function createDogeClient(chainifyNetwork, derivationPath) {
+  const dogeConfig = config.assets.DOGE
+  const mnemonic = await secretManager.getMnemonic('DOGE')
+
+  // Create Chain provider
+  const chainProvider = new DogecoinEsploraApiProvider({
+    batchUrl: chainifyNetwork.batchScraperUrl,
+    url: chainifyNetwork.scraperUrl,
+    network: chainifyNetwork,
+    numberOfBlockConfirmation: dogeConfig.feeNumberOfBlocks
+  })
+
+  // Create swap provider
+  const swapProvider = new DogecoinSwapEsploraProvider({
+    network: chainifyNetwork,
+    scraperUrl: chainifyNetwork.scraperUrl
+  })
+
+  // Create wallet provider
+  const walletOptions = {
+    network: chainifyNetwork,
+    baseDerivationPath: derivationPath,
+    mnemonic
+  }
+
+  const walletProvider = new DogecoinHDWalletProvider(walletOptions, chainProvider)
   swapProvider.setWallet(walletProvider)
 
   return new Client().connect(swapProvider)
@@ -296,6 +333,14 @@ async function createClient(asset) {
           feeProviderUrl: 'https://litecoinspace.org/api/v1/fees/recommended'
         }
         client = createLtcClient(chainifyNetwork, derivationPath)
+        break
+      case ChainId.Dogecoin:
+        chainifyNetwork = {
+          ...chainifyNetwork,
+          scraperUrl: config.assets.DOGE.api.url,
+          batchScraperUrl: config.assets.DOGE.batchApi.url
+        }
+        client = createDogeClient(chainifyNetwork, derivationPath)
         break
       case ChainId.Near:
         client = createNearClient(chainifyNetwork, derivationPath)

@@ -14,6 +14,13 @@
     "minConf": 1
   },
   {
+    "code": "DOGE",
+    "balance": 0,
+    "min": 100000000,
+    "max": 1000000000000,
+    "minConf": 1
+  },
+  {
     "code": "ETH",
     "balance": 0,
     "min": 1000000000000000,
