@@ -389,7 +389,7 @@ OrderSchema.methods.addTx = function (type, tx) {
     txMapItemValue.feeAmountUsd = calculateFeeUsdAmount(nativeAsset, tx.fee, this[`${side}${key}RateUsd`]) || 0
   }
 
-  if (tx.blockHash) {
+  if (tx.blockHash || tx.blockNumber) {
     txMapItemValue.blockHash = tx.blockHash
     txMapItemValue.blockNumber = tx.blockNumber
 

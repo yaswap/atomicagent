@@ -26,7 +26,7 @@ async function process(job) {
   const txMapEntry = order.txMap[hash]
 
   if (txMapEntry) {
-    if (txMapEntry.blockHash) return
+    if (txMapEntry.blockHash || txMapEntry.blockNumber) return
 
     asset = txMapEntry.asset
   } else {
@@ -40,7 +40,7 @@ async function process(job) {
   const client = await getClient(asset)
   const tx = await client.chain.getTransactionByHash(hash)
 
-  if (tx.blockHash) {
+  if (tx.blockHash || tx.blockNumber) {
     if (getAssetInfo(asset).chain === 'ethereum') {
       const receipt = await client.chain.getProvider().getTransactionReceipt(hash)
 
