@@ -38,7 +38,12 @@ async function process(job) {
   }
 
   const client = await getClient(asset)
-  const tx = await client.chain.getTransactionByHash(hash)
+  let tx
+  try {
+    tx = await client.chain.getTransactionByHash(hash)
+  } catch (e) {
+    throw new RescheduleError(`Failed to get transaction ${hash} with error ${e.message}`)
+  }
 
   if (tx.blockHash || tx.blockNumber) {
     if (getAssetInfo(asset).chain === 'ethereum') {

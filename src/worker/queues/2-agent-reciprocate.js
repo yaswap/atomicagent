@@ -125,7 +125,7 @@ async function process(job) {
   try {
     toLastScannedBlock = await toClient.chain.getBlockHeight()
   } catch (e) {
-    throw new RescheduleError(e.message, order.to)
+    throw new RescheduleError(`Failed to get latest block height with error = ${e.message}`, order.to)
   }
 
   const toFundTx = await order.initiateSwap()

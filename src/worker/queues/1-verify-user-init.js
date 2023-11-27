@@ -33,7 +33,12 @@ async function process(job) {
 
   await order.verifyInitiateSwapTransaction()
 
-  const fromFundTx = await fromClient.chain.getTransactionByHash(order.fromFundHash)
+  let fromFundTx
+  try {
+    fromFundTx = await fromClient.chain.getTransactionByHash(order.fromFundHash)
+  } catch (e) {
+    throw new RescheduleError(`Failed to get transaction ${order.fromFundHash} with error ${e.message}`)
+  }
 
   if (fromFundTx.confirmations < order.minConf) {
     debug(`Reschedule ${order.orderId}: Need more confirmations (${fromFundTx.confirmations} < ${order.minConf})`)

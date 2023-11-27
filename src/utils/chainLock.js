@@ -24,7 +24,8 @@ const RETRY_ON = [
   'InsufficientBalanceError',
   'RescheduleError',
   'PossibleTimelockError',
-  'NodeError'
+  'NodeError',
+  'InvalidDestinationAddressError'
 ]
 
 const attemptToLockChain = (asset) => {
@@ -98,11 +99,11 @@ const withRetry = async (asset, func) => {
     return result
   } catch (e) {
     if (RETRY_ON.includes(e.name)) {
-      throw new RescheduleError(e.message, asset)
+      throw new RescheduleError(`error ${e.message}`, asset)
     }
 
     if (e.message.includes('opcode 0xfe not defined') || e.message.includes('execution reverted')) {
-      throw new RescheduleError(e.message, asset)
+      throw new RescheduleError(`error ${e.message}`, asset)
     }
 
     throw e
