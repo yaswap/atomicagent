@@ -11,6 +11,7 @@ class RescheduleError extends BaseError {
   constructor(msg, asset, props) {
     super(msg, props)
     this.asset = asset
+    this.name = 'RescheduleError'
 
     if (config.assets[asset].blockTimeInSeconds) {
       this.delay = config.assets[asset].blockTimeInSeconds * 1000
