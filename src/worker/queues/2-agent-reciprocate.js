@@ -24,13 +24,14 @@ async function process(job) {
   const fromClient = await order.fromClient()
   const toClient = await order.toClient()
 
-  const fromCurrentBlockNumber = await fromClient.chain.getBlockHeight()
+  let fromCurrentBlockNumber
   let fromCurrentBlock
 
   try {
+    fromCurrentBlockNumber = await fromClient.chain.getBlockHeight()
     fromCurrentBlock = await fromClient.chain.getBlockByNumber(fromCurrentBlockNumber)
   } catch (e) {
-    throw new RescheduleError(e.message, order.from)
+    throw new RescheduleError(`Failed to get latest block height with error = ${e.message}`, order.from)
   }
 
   const stop =

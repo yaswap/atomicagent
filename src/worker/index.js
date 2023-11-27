@@ -185,6 +185,7 @@ module.exports.start = async () => {
 
     q.on('failed', async (job, err) => {
       debug(`[failed] Job "${job.name}" in queue "${q.name}" was failed`)
+      debug(`err.name = "${err.name}"`)
 
       if (err.name !== 'RescheduleError') {
         reportError(err, { queueName: q.name, orderId: job.data?.orderId }, { job })
