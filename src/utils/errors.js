@@ -14,7 +14,9 @@ class RescheduleError extends BaseError {
     this.name = 'RescheduleError'
 
     if (config.assets[asset].blockTimeInSeconds) {
-      this.delay = config.assets[asset].blockTimeInSeconds * 1000
+      // this.delay = config.assets[asset].blockTimeInSeconds * 1000
+      // Retry every 30 seconds to avoid sending too many requests
+      this.delay = 30 * 1000
     }
   }
 }
