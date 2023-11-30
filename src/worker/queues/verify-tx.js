@@ -42,7 +42,7 @@ async function process(job) {
   try {
     tx = await client.chain.getTransactionByHash(hash)
   } catch (e) {
-    throw new RescheduleError(`Failed to get transaction ${hash} with error ${e.message}`)
+    throw new RescheduleError(`Failed to get transaction ${hash} with error ${e.message}`, asset)
   }
 
   if (tx.blockHash || tx.blockNumber) {

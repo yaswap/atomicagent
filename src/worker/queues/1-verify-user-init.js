@@ -37,7 +37,7 @@ async function process(job) {
   try {
     fromFundTx = await fromClient.chain.getTransactionByHash(order.fromFundHash)
   } catch (e) {
-    throw new RescheduleError(`Failed to get transaction ${order.fromFundHash} with error ${e.message}`)
+    throw new RescheduleError(`Failed to get transaction ${order.fromFundHash} with error ${e.message}`, order.from)
   }
 
   if (fromFundTx.confirmations < order.minConf) {
