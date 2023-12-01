@@ -2,13 +2,13 @@
   {
     "from": "BTC",
     "to": "YAC",
-    "spread": 0.01,
+    "spread": 0,
     "status": "ACTIVE"
   },
   {
     "from": "YAC",
     "to": "BTC",
-    "spread": 0.9,
+    "spread": 0.6,
     "status": "ACTIVE"
   },
   {
@@ -38,13 +38,13 @@
   {
     "from": "YAC",
     "to": "USDT",
-    "spread": 0.9,
+    "spread": 0.6,
     "status": "ACTIVE"
   },
   {
     "from": "USDT",
     "to": "YAC",
-    "spread": 0.01,
+    "spread": 0,
     "status": "ACTIVE"
   },
   {
