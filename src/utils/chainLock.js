@@ -25,7 +25,8 @@ const RETRY_ON = [
   'RescheduleError',
   'PossibleTimelockError',
   'NodeError',
-  'InvalidDestinationAddressError'
+  'InvalidDestinationAddressError',
+  'TypeError'
 ]
 
 const attemptToLockChain = (asset) => {
@@ -106,7 +107,7 @@ const withRetry = async (asset, func) => {
       throw new RescheduleError(`error ${e.message}`, asset)
     }
 
-    throw e
+    throw new RescheduleError(`error ${e.message}`, asset)
   }
 }
 
