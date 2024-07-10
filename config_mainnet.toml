@@ -41,9 +41,9 @@ killswitch = 'pm2 stop "Worker"'
     [assets.BTC.wallet]
     mnemonic = "salad wreck holiday immune example derive cause scene swim you title march"
     [assets.BTC.api]
-    url = "https://mempool.space/api"
+    url = "https://cb.yacoin.org/bitcoin_api"
     [assets.BTC.batchApi]
-    url = "https://mempool.space/api"
+    url = "https://cb.yacoin.org/bitcoin_api"
 
   [assets.YAC]
   network = "yacoin"
@@ -66,9 +66,9 @@ killswitch = 'pm2 stop "Worker"'
     [assets.LTC.wallet]
     mnemonic = "salad wreck holiday immune example derive cause scene swim you title march"
     [assets.LTC.api]
-    url = "https://litecoinspace.org/api"
+    url = "https://cb.yacoin.org/litecoin_api"
     [assets.LTC.batchApi]
-    url = "https://litecoinspace.org/api"
+    url = "https://cb.yacoin.org/litecoin_api"
 
   [assets.DOGE]
   network = "dogecoin"
@@ -78,9 +78,9 @@ killswitch = 'pm2 stop "Worker"'
     [assets.DOGE.wallet]
     mnemonic = "salad wreck holiday immune example derive cause scene swim you title march"
     [assets.DOGE.api]
-    url = "https://dogechain.info/api/v1"
+    url = "https://cb.yacoin.org/dogecoin_api"
     [assets.DOGE.batchApi]
-    url = "https://dogechain.info/api/v1"
+    url = "https://cb.yacoin.org/dogecoin_api"
 
   [assets.ETH]
   network="ethereum_mainnet"
