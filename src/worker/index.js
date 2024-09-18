@@ -85,6 +85,15 @@ const opts = {
   }
 }
 
+// To avoid high number of requests to get coin balance, we are limiting the requests to 1 per minute
+const updateMarketDataQueueOpts = {
+  ...opts,
+  limiter: {
+    ...opts.limiter,
+    duration: 1000 * 60
+  }
+}
+
 const addUniqueJob = (q, name, data = {}, opts = {}) => {
   if (name === 'UpdateMarketData' || q.name === 'UpdateMarketData') {
     return updateMarketDataQueue.add(
@@ -155,7 +164,7 @@ module.exports.start = async () => {
     const processorPath = path.join(QUEUES_DIR, queueFileName)
 
     if (queueFileName.startsWith('update-market-data')) {
-      updateMarketDataQueue = new Queue('UpdateMarketData', opts)
+      updateMarketDataQueue = new Queue('UpdateMarketData', updateMarketDataQueueOpts)
       updateMarketDataQueue.process(1, processorPath)
     } else if (queueFileName.startsWith('verify-tx')) {
       verifyTxQueue = new Queue('VerifyTx', opts)
