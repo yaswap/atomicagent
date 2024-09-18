@@ -53,8 +53,8 @@ killswitch = 'pm2 stop "Worker"'
     [assets.YAC.wallet]
     mnemonic = "salad wreck holiday immune example derive cause scene swim you title march"
     [assets.YAC.api]
-    esploraUrl = "http://localhost:3001/api"
-    esploraSwapUrl = "http://localhost:3001"
+    esploraUrl = "https://yaswap.yacoin.org/api"
+    esploraSwapUrl = "https://yaswap.yacoin.org"
 
   [assets.LTC]
   network = "litecoin"
@@ -89,7 +89,7 @@ killswitch = 'pm2 stop "Worker"'
     [assets.ETH.wallet]
     mnemonic = "salad wreck holiday immune example derive cause scene swim you title march"
     [assets.ETH.scraper]
-    url = "http://localhost:8081"
+    url = "https://yaswap.yacoin.org/ethscraper_mainnet"
     [assets.ETH.rpc]
     url = "https://mainnet.infura.io/v3/37efa691ffec4c41a60aa4a69865d8f6"
 
@@ -102,6 +102,6 @@ killswitch = 'pm2 stop "Worker"'
     [assets.USDT.wallet]
     mnemonic = "salad wreck holiday immune example derive cause scene swim you title march"
     [assets.USDT.scraper]
-    url = "http://localhost:8081"
+    url = "https://yaswap.yacoin.org/ethscraper_mainnet"
     [assets.USDT.rpc]
     url = "https://mainnet.infura.io/v3/37efa691ffec4c41a60aa4a69865d8f6"
