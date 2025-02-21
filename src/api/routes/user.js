@@ -9,33 +9,34 @@ const Order = require('../../models/Order')
 const { safeCompare } = require('../../utils/crypto')
 
 const ensureAuth = require('../../middlewares/ensureAuth')
+const { addUniqueJob, getAtomicAgentQueue } = require('../../worker')
 
 const ALLOWED_TYPES = ['reciprocate-init-swap']
 
 const ALLOWED_ACTIONS = ['approve', 'reject']
 
-// const ALLOWED_RETRY_JOBS = [
-//   {
-//     name: 'verify-user-init-tx',
-//     setStatus: 'USER_FUNDED_UNVERIFIED'
-//   },
-//   {
-//     name: 'reciprocate-init-swap',
-//     setStatus: 'USER_FUNDED'
-//   },
-//   {
-//     name: 'fund-swap',
-//     setStatus: 'AGENT_CONTRACT_CREATED'
-//   },
-//   {
-//     name: 'find-claim-tx-or-refund',
-//     setStatus: 'AGENT_FUNDED'
-//   },
-//   {
-//     name: 'agent-claim',
-//     setStatus: 'USER_CLAIMED'
-//   }
-// ]
+const ALLOWED_RETRY_JOBS = [
+  // {
+  //   name: 'verify-user-init-tx',
+  //   setStatus: 'USER_FUNDED_UNVERIFIED'
+  // },
+  // {
+  //   name: 'reciprocate-init-swap',
+  //   setStatus: 'USER_FUNDED'
+  // },
+  {
+    name: 'fund-swap',
+    setStatus: 'AGENT_CONTRACT_CREATED'
+  },
+  {
+    name: 'find-claim-tx-or-refund',
+    setStatus: 'AGENT_FUNDED'
+  },
+  {
+    name: 'agent-claim',
+    setStatus: 'USER_CLAIMED'
+  }
+]
 
 router.post(
   '/login',
@@ -108,46 +109,41 @@ router.get(
   })
 )
 
-// router.post(
-//   '/order/retry',
-//   ensureAuth(401),
-//   asyncHandler(async (req, res) => {
-//     const { body } = req
-//     const { orderId, jobName } = body
+router.post(
+  '/order/retry',
+  ensureAuth(401),
+  asyncHandler(async (req, res) => {
+    const { body } = req
+    const { orderId, jobName } = body
 
-//     if (!orderId) {
-//       return res.notOk(400, 'Order ID missing')
-//     }
+    if (!orderId) {
+      return res.notOk(400, 'Order ID missing')
+    }
 
-//     if (!ALLOWED_RETRY_JOBS.find((job) => job.name === jobName)) {
-//       return res.notOk(400, `Invalid job name: ${jobName}`)
-//     }
+    if (!ALLOWED_RETRY_JOBS.find((job) => job.name === jobName)) {
+      return res.notOk(400, `Invalid job name: ${jobName}`)
+    }
 
-//     const order = await Order.findOne({ orderId: orderId }).exec()
-//     if (!order) {
-//       return res.notOk(400, `Order not found: ${orderId}`)
-//     }
+    const order = await Order.findOne({ orderId: orderId }).exec()
+    if (!order) {
+      return res.notOk(400, `Order not found: ${orderId}`)
+    }
 
-//     const index = ALLOWED_RETRY_JOBS.findIndex((job) => job.name === jobName)
-//     const jobsToBeRemoved = ALLOWED_RETRY_JOBS.slice(index).map((job) => job.name)
+    const oldStatus = order.status
+    if (oldStatus === 'AGENT_CONTRACT_CREATED' && jobName === 'fund-swap') {
+      addUniqueJob(getAtomicAgentQueue(), '3-agent-fund.js', { orderId: order.orderId })
+    }
 
-//     await agenda.cancel({
-//       name: {
-//         $in: jobsToBeRemoved
-//       },
-//       'data.orderId': orderId
-//     })
+    if (oldStatus === 'AGENT_FUNDED' && jobName === 'find-claim-tx-or-refund') {
+      addUniqueJob(getAtomicAgentQueue(), '4-find-user-claim-or-agent-refund', { orderId: order.orderId })
+    }
 
-//     order.status = ALLOWED_RETRY_JOBS[index].setStatus
-//     await order.save()
-
-//     await agenda.now(jobName, { orderId: order.orderId })
-
-//     await order.log('RETRY', jobName)
-
-//     res.ok()
-//   })
-// )
+    if (oldStatus === 'USER_CLAIMED' && jobName === 'agent-claim') {
+      addUniqueJob(getAtomicAgentQueue(), '5-agent-claim.js', { orderId: order.orderId })
+    }
+    res.ok()
+  })
+)
 
 router.post(
   '/order/ignore',
